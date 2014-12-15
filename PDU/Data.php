@@ -171,6 +171,10 @@ class PDU_Data {
 					throw new Exception("Unknown alphabet");
 			}
 			
+			if($header){
+				$size += self::HEADER_SIZE;
+			}
+			
 			$this->_parts[] = new PDU_Data_Part(
 				$this,
 				$part,
@@ -188,6 +192,8 @@ class PDU_Data {
 	 */
 	protected function _splitMessage($max)
 	{
+		PDU::debug("_splitMessage [".$max."]: ");
+		
 		// size less or equal max
 		if($this->getSize() <= $max){
 			return array($this->_data);
@@ -200,8 +206,11 @@ class PDU_Data {
 		
 		while(TRUE)
 		{
-			$data[]  = mb_substr($this->_data, $offset, $size);
+			$part    = mb_substr($this->_data, $offset, $size);
+			$data[]  = $part;
 			$offset += $size;
+			
+			PDU::debug("Message [".$size."]: " . $part);
 			
 			if($offset >= $this->getSize()){
 				break;
