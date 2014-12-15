@@ -122,7 +122,7 @@ abstract class PDU {
 	/**
 	 * set address
 	 * @param string $number
-	 * @return \Submit
+	 * @return \PDU
 	 */
 	public function setAddress($number)
 	{
@@ -183,10 +183,12 @@ abstract class PDU {
 	/**
 	 * set pid
 	 * @param integer $pid
+	 * @return \PDU
 	 */
 	public function setPid($pid)
 	{
 		$this->_pid = 0xFF&$pid;
+		return $this;
 	}
 	
 	/**

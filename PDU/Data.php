@@ -131,6 +131,11 @@ class PDU_Data {
 		$header = (count($parts) > 1);
 		$uniqid = rand(0, 65535);
 		
+		// message will be splited, need headers
+		if($header){
+			$this->getPdu()->getType()->setUdhi(1);
+		}
+		
 		foreach($parts as $index => $text){
 			
 			$params = 
@@ -195,7 +200,7 @@ class PDU_Data {
 		
 		while(TRUE)
 		{
-			$data[]  = mb_substr($this->data, $offset, $size);
+			$data[]  = mb_substr($this->_data, $offset, $size);
 			$offset += $size;
 			
 			if($offset >= $this->getSize()){

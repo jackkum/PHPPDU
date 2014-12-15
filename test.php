@@ -26,6 +26,8 @@
  * SMS-Deliver
  * Description		SCA		|	PDU type	|	OA	|	PID	 |	DCS		|	SCTS	|	UDL
  * size,bytes		1-12	|	1			|	2-12|	1	 |	1		|	7		|	1		|	0-140
+ * 
+ * for check http://www.diafaan.com/sms-tutorials/gsm-modem-tutorial/online-sms-pdu-decoder/
  */
 
 error_reporting(E_ALL);
@@ -37,9 +39,15 @@ require_once 'Submit.php';
 $pdu = new Submit();
 
 $pdu->setAddress("79025449307");
-$pdu->setData("test");
+$pdu->setData("long long long long long long long long long long long "
+		. "long long long long long long long long long long long "
+		. "long long long long long long long long long long long long long "
+		. "long long long long long long long long long long long long "
+		. "long long long long long long long long long long "
+		. "long long long long long long long long long long "
+		. "long long message...");
 
-define('PDU_DEBUG', TRUE);
+//define('PDU_DEBUG', TRUE);
 
 foreach($pdu->getParts() as $part){
 	echo get_class($part), PHP_EOL;

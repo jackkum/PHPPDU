@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once 'PDU/Data/Header.php';
+
 class PDU_Data_Part {
 	
 	/**
