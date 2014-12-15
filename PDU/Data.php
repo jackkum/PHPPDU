@@ -192,7 +192,6 @@ class PDU_Data {
 	 */
 	protected function _splitMessage($max)
 	{
-		PDU::debug("_splitMessage [".$max."]: ");
 		
 		// size less or equal max
 		if($this->getSize() <= $max){
@@ -209,8 +208,6 @@ class PDU_Data {
 			$part    = mb_substr($this->_data, $offset, $size);
 			$data[]  = $part;
 			$offset += $size;
-			
-			PDU::debug("Message [".$size."]: " . $part);
 			
 			if($offset >= $this->getSize()){
 				break;

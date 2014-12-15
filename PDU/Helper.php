@@ -143,8 +143,6 @@ class PDU_Helper {
 		
 		$str = unpack('H*', $ret);
 		
-		PDU::debug("Unpack: ".$str[1]);
-		
 		return array($len, strtoupper($str[1]));
 	}
 	
