@@ -1,0 +1,73 @@
+<?php
+
+/* 
+ * Copyright (C) 2014 jackkum
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+class PDU_SCTS {
+	
+	/**
+	 * unix time
+	 * @var integer
+	 */
+	protected $_time;
+	
+	/**
+	 * create datetime
+	 * @param string $datetime
+	 */
+	public function __construct($datetime)
+	{
+		$this->_time = strtotime($datetime);
+	}
+	
+	/**
+	 * getter time
+	 * @return integer
+	 */
+	public function getTime()
+	{
+		return $this->_time;
+	}
+	
+	/**
+	 * format datatime for split
+	 * @return string
+	 */
+	protected function _getDateTime()
+	{
+		return gmdate('ymdHis', $this->getTime());
+	}
+
+	/**
+	 * cast to string
+	 * @return string
+	 */
+	public function __toString() 
+	{
+		return implode(
+			"",								// join result string
+			array_map(
+				'strrev',					// reverse parts
+				str_split(					// split datetime
+					$this->_getDateTime(),	// get datetime `ymdHis`
+					2						// 2 letters
+				)
+			)
+		);
+	}
+	
+}
