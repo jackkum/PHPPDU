@@ -87,6 +87,11 @@ abstract class PDU {
 		$this->setDcs();
 	}
 	
+	/**
+	 * get a part pdu string and cut them from pdu
+	 * @param integer $length
+	 * @return string|null
+	 */
 	public static function getPduSubstr($length)
 	{
 		$str = mb_substr(self::$_pduParse, 0, $length);
