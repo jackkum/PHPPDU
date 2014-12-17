@@ -110,6 +110,20 @@ class PDU_DCS {
 	 */
 	protected $_messageIndicationType = FALSE;
 
+	/**
+	 * parse pdu string
+	 * @return \self
+	 */
+	public static function parse()
+	{
+		$DCS  = new self();
+		$byte = hexdec(PDU::getPduSubstr(2));
+		
+		$DCS->_encodeGroup  = 0x0F&($byte>>4);
+		$DCS->_dataEncoding = 0x0F&$byte;
+		
+		return $DCS;
+	}
 
 	/**
 	 * getter byte value

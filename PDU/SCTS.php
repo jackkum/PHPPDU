@@ -35,6 +35,31 @@ class PDU_SCTS {
 	}
 	
 	/**
+	 * parse pdu string
+	 * @return \self
+	 */
+	public static function parse()
+	{
+		$hex = PDU::getPduSubstr(14);
+		list($year, $month, $day, $hour, $minute, $second, $tmp) = array_map(
+			'strrev',
+			str_split($hex,2)
+		);
+		
+		return new self(
+			sprintf(
+				"20%02D-%02D-%02D %02D:%02D:%02D",
+				$year,
+				$month,
+				$day,
+				$hour,
+				$minute,
+				$second
+			)
+		);
+	}
+	
+	/**
 	 * getter time
 	 * @return integer
 	 */
@@ -49,7 +74,7 @@ class PDU_SCTS {
 	 */
 	protected function _getDateTime()
 	{
-		return gmdate('ymdHis', $this->getTime());
+		return gmdate('ymdHis00', $this->getTime());
 	}
 
 	/**

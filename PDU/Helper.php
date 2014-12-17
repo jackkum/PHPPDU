@@ -59,11 +59,55 @@ class PDU_Helper {
 		}
 	}
 	
-	public static function toWord($str)
+	/**
+	 * decode message from unicode
+	 * @param string $text
+	 * @return srting
+	 */
+	public static function decode16Bit($text)
 	{
-		return chr(hexdec($str));
+		return implode(
+			"",
+			array_map(
+				'chr',
+				array_map(
+					'hexdec',
+					str_split(
+						$text, 
+						4
+					)
+				)
+			)
+		);
 	}
 	
+	/**
+	 * decode message
+	 * @param string $text
+	 * @return string
+	 */
+	public static function decode8Bit($text)
+	{
+		return implode(
+			"",
+			array_map(
+				'chr',
+				array_map(
+					'hexdec',
+					str_split(
+						$text, 
+						2
+					)
+				)
+			)
+		);
+	}
+	
+	/**
+	 * decode message from 7bit
+	 * @param string $text
+	 * @return string
+	 */
 	public static function decode7bit($text)
 	{
 		$ret = '';
@@ -102,7 +146,7 @@ class PDU_Helper {
 	 * @param string $text
 	 * @return array
 	 */
-	public static function encode8BitMessage($text)
+	public static function encode8Bit($text)
 	{
 		$length = 0;
 		$pdu    = NULL;
@@ -151,7 +195,7 @@ class PDU_Helper {
 	 * @param string $text
 	 * @return array
 	 */
-	public static function encode16BitMessage($text)
+	public static function encode16Bit($text)
 	{
 		$length = 0;
 		$pdu    = NULL;

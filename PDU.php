@@ -19,8 +19,10 @@
 
 require_once 'SCA.php';
 require_once 'PDU/DCS.php';
+require_once 'PDU/SCTS.php';
 require_once 'PDU/Helper.php';
 require_once 'PDU/Data.php';
+require_once 'PDU/VP.php';
 
 abstract class PDU {
 	
@@ -67,6 +69,13 @@ abstract class PDU {
 	protected $_ud;
 	
 	/**
+	 * parsed string
+	 * @var string
+	 */
+	protected static $_pduParse;
+
+
+	/**
 	 * create pdu
 	 */
 	public function __construct()
@@ -76,6 +85,94 @@ abstract class PDU {
 		$this->setDcs();
 	}
 	
+	public static function getPduSubstr($length)
+	{
+		$str = mb_substr(self::$_pduParse, 0, $length);
+		self::$_pduParse = mb_substr(self::$_pduParse, $length);
+		return $str;
+	}
+
+	/**
+	 * parse pdu string
+	 * @param string $PDU
+	 * @return \PDU
+	 * @throws Exception
+	 */
+	public static function parse($PDU)
+	{
+		// current pdu string
+		self::$_pduParse = $PDU;
+		
+		// parse service center address
+		$sca = SCA::parse();
+		
+		// parse type of sms
+		$type = PDU_Type::parse();
+		
+		switch($type->getMti()){
+			case PDU_Type::SMS_DELIVER:
+				$self = new Deliver();
+				break;
+		
+			case PDU_Type::SMS_SUBMIT:
+				$self = new Submit();
+				break;
+			
+			case PDU_Type::SMS_REPORT:
+				
+				break;
+			
+			default:
+				throw new Exception("Unknown sms type");
+		}
+		
+		// set sca
+		$self->_sca = $sca;
+		// set type
+		$self->_type = $type;
+		
+		// if this is submit type
+		if($self->_type instanceof PDU_Type_Submit){
+			// get mr
+			$self->_mr = hexdec(PDU::getPduSubstr(2));
+		}
+		
+		// parse sms address
+		$self->_address = SCA::parse();
+		
+		// get pid
+		$self->_pid = hexdec(PDU::getPduSubstr(2));
+		
+		// parse dcs
+		$self->_dcs = PDU_DCS::parse();
+		
+		// if this submit sms
+		if($self->_type instanceof PDU_Type_Submit){
+			// parse vp
+			$self->_vp = PDU_VP::parse($self);
+		} else {
+			// parse scts
+			$self->_scts = PDU_SCTS::parse();
+		}
+		
+		// get data length
+		$self->_udl = hexdec(PDU::getPduSubstr(2));
+		
+		// parse data
+		$self->_ud = PDU_Data::parse($self);
+		
+		return $self;
+	}
+
+	/**
+	 * getter for udl
+	 * @return integer
+	 */
+	public function getUdl()
+	{
+		return $this->_udl;
+	}
+
 	/**
 	 * set sms center
 	 * @param string|null $number
@@ -142,7 +239,7 @@ abstract class PDU {
 	
 	/**
 	 * set Data Coding Scheme
-	 * @return \Submit
+	 * @return \PDU
 	 */
 	public function setDcs()
 	{
@@ -162,7 +259,7 @@ abstract class PDU {
 	/**
 	 * set data
 	 * @param string $data
-	 * @return \Submit
+	 * @return \PDU
 	 */
 	public function setData($data)
 	{

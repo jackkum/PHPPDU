@@ -17,7 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+require_once 'PDU/Type/Deliver.php';
+require_once 'PDU/Type/Submit.php';
+
 abstract class PDU_Type {
+	
+	const SMS_SUBMIT   = 0x01;
+	const SMS_DELIVER  = 0x00;
+	const SMS_REPORT   = 0x03;
 	
 	const VPF_NONE     = 0x00;
 	const VPF_SIEMENS  = 0x01;
@@ -62,6 +69,41 @@ abstract class PDU_Type {
 	protected $_mti;
 	
 	/**
+	 * parse sms type
+	 * @return \PDU_Type
+	 * @throws Exception
+	 */
+	public static function parse()
+	{
+		$byte = hexdec(PDU::getPduSubstr(2));
+		$type = NULL;
+		
+		switch((3&$byte)){
+			case self::SMS_DELIVER:
+				$type = new PDU_Type_Deliver();
+				break;
+			case self::SMS_SUBMIT:
+				$type = new PDU_Type_Submit();
+				break;
+			case self::SMS_REPORT:
+				throw new Exception("Not ready :(");
+				//break;
+			default:
+				throw new Exception("Unknown type sms");
+		}
+		
+		$type->_rp   = (1&$byte>>7);
+		$type->_udhi = (1&$byte>>6);
+		$type->_srr  = (1&$byte>>5);
+		$type->_vpf  = (3&$byte>>3);
+		$type->_rd   = (1&$byte>>2);
+		$type->_mti  = (3&$byte);
+		
+		return $type;
+		
+	}
+	
+	/**
 	 * Calculate byte value
 	 * @return integer
 	 */
@@ -95,12 +137,39 @@ abstract class PDU_Type {
 	}
 	
 	/**
+	 * getter for vpf
+	 * @return integer
+	 */
+	public function getVpf()
+	{
+		return $this->_vpf;
+	}
+	
+	/**
 	 * set user data header
 	 * @param type $udhi
 	 */
 	public function setUdhi($udhi)
 	{
 		$this->_udhi = (0x01&$udhi);
+	}
+	
+	/**
+	 * getter for udhi
+	 * @return integer
+	 */
+	public function getUdhi()
+	{
+		return $this->_udhi;
+	}
+	
+	/**
+	 * getter for mti
+	 * @return integer
+	 */
+	public function getMti()
+	{
+		return $this->_mti;
 	}
 	
 	/**

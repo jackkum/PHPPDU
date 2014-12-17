@@ -69,6 +69,57 @@ class PDU_Data_Part {
 	}
 	
 	/**
+	 * parse pdu string
+	 * @param PDU_Data $data
+	 * @return array [decded text, text size, self object]
+	 * @throws Exception
+	 */
+	public static function parse(PDU_Data $data)
+	{
+		$alphabet = $data->getPdu()->getDcs()->getTextAlphabet();
+		$header   = NULL;
+		$length   = $data->getPdu()->getUdl() * ($alphabet == PDU_DCS::ALPHABET_UCS2 ? 4 : 2);
+		
+		if($data->getPdu()->getType()->getUdhi()){
+			$header = PDU_Data_Header::parse();
+		}
+		
+		$hex = PDU::getPduSubstr($length);
+		
+		switch($alphabet){
+			case PDU_DCS::ALPHABET_DEFAULT:
+				$text = PDU_Helper::decode7bit($hex);
+				break;
+			
+			case PDU_DCS::ALPHABET_8BIT:
+				$text = PDU_Helper::decode8bit($hex);
+				break;
+			
+			case PDU_DCS::ALPHABET_UCS2:
+				$text = PDU_Helper::decode16Bit($hex);
+				break;
+			
+			default:
+				throw new Exception("Unknown alpabet");
+		}
+		
+		$size = mb_strlen($text);
+		$self = new self(
+			$data, 
+			$hex, 
+			$size, 
+			($header ? $header->toArray() : NULL)
+		);
+		
+		return array(
+			$text,
+			$size,
+			$self
+		);
+	}
+
+
+	/**
 	 * getter data
 	 * @return string
 	 */
@@ -79,11 +130,11 @@ class PDU_Data_Part {
 	
 	/**
 	 * getter header
-	 * @return string
+	 * @return PDU_Data_Header
 	 */
 	public function getHeader()
 	{
-		return (string) $this->_header;
+		return $this->_header;
 	}
 	
 	/**

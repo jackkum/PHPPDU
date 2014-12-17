@@ -67,6 +67,25 @@ class PDU_Data {
 	}
 	
 	/**
+	 * parse pdu string
+	 * @param PDU $pdu
+	 * @return \self
+	 */
+	public static function parse(PDU $pdu)
+	{
+		$self = new self($pdu);
+		
+		if($pdu->getDcs()->getTextAlphabet() == PDU_DCS::ALPHABET_UCS2){
+			$self->_isUnicode = TRUE;
+		}
+		
+		list($self->_data, $self->_size, $part) = PDU_Data_Part::parse($self);
+		$self->_parts[] = $part;
+		
+		return $self;
+	}
+	
+	/**
 	 * set text message
 	 * @param string $data
 	 */
@@ -159,12 +178,12 @@ class PDU_Data {
 				
 				case PDU_DCS::ALPHABET_8BIT:
 					PDU::debug("PDU_Helper::encode8BitMessage()");
-					list($size,$part) = PDU_Helper::encode8BitMessage($text);
+					list($size,$part) = PDU_Helper::encode8Bit($text);
 					break;
 				
 				case PDU_DCS::ALPHABET_UCS2:
 					PDU::debug("PDU_Helper::encode16BitMessage()");
-					list($size,$part) = PDU_Helper::encode16BitMessage($text);
+					list($size,$part) = PDU_Helper::encode16Bit($text);
 					break;
 				
 				default:

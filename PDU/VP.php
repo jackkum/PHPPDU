@@ -49,6 +49,42 @@ class PDU_VP {
 	}
 	
 	/**
+	 * parse pdu string
+	 * @param PDU $pdu
+	 * @return \self
+	 * @throws Exception
+	 */
+	public static function parse(PDU $pdu)
+	{
+		$vp = new self($pdu);
+		
+		switch($pdu->getType()->getVpf()){
+			case PDU_Type::VPF_NONE:     return $vp;
+			case PDU_Type::VPF_ABSOLUTE: return PDU_SCTS::parse();
+			
+			case PDU_Type::VPF_RELATIVE:
+				
+				$byte = hexdec(PDU::getPduSubstr(2));
+				
+				if($byte <= 143){
+					$vp->_interval = ($byte+1) * (5*60);
+				} else if($byte <= 167){
+					$vp->_interval = (3600*24*12) + ($byte-143) * (30*60);
+				} else if($byte <= 196) {
+					$vp->_interval = ($byte-166) * (3600*24);
+				} else {
+					$vp->_interval = ($byte-192) * (3600*24*7);
+				}
+				
+				return $vp;
+			
+			default:
+				throw new Exception("Unknown VPF");
+		}
+	}
+
+
+	/**
 	 * getter for pdu message
 	 * @return PDU
 	 */

@@ -18,6 +18,7 @@
  */
 
 require_once 'SCA/Type.php';
+require_once 'PDU/Helper.php';
 
 class SCA {
 	
@@ -49,6 +50,62 @@ class SCA {
 		$this->setType(new SCA_Type());
 	}
 	
+	public static function parse()
+	{
+		$SCA     = new self();
+		$size    = hexdec(PDU::getPduSubstr(2));
+		
+		if($size){
+			
+			if(($size % 2) != 0){
+				$size++;
+			}
+			
+			$SCA->setType(
+				new SCA_Type(
+					hexdec(PDU::getPduSubstr(2))
+				)
+			);
+			
+			$hex = PDU::getPduSubstr($size);
+			
+			switch($SCA->getType()->getType()){
+				case SCA_Type::TYPE_UNKNOWN:
+				case SCA_Type::TYPE_INTERNATIONAL:
+				case SCA_Type::TYPE_ACCEPTER_INTO_NET:
+				case SCA_Type::TYPE_SUBSCRIBER_NET:
+				case SCA_Type::TYPE_TRIMMED:
+					
+					$SCA->setPhone(
+						implode(
+							"",
+							array_map(
+								'strrev', 
+								array_map(
+									array('self', '_map_filter_decode'),
+									str_split($hex, 2)
+								)
+							)
+						)
+					);
+					
+					break;
+				
+				case SCA_Type::TYPE_ALPHANUMERICAL:
+					
+					$SCA->setPhone(
+						PDU_Helper::decode7bit($hex)
+					);
+					
+					break;
+				
+			}
+			
+		}
+		
+		return $SCA;
+	}
+
 	/**
 	 * getter for phone
 	 * @return string|null
@@ -66,10 +123,10 @@ class SCA {
 	{
 		$this->_phone = implode(
 			"",
-			array_map(                              // join filtered phone letters
-				array($this, '_map_filter_encode'), // encode filter
-				str_split(                          // split string
-					preg_replace(                   // replace wrong letters
+			array_map(                               // join filtered phone letters
+				array('self', '_map_filter_encode'), // encode filter
+				str_split(                           // split string
+					preg_replace(                    // replace wrong letters
 						'/([^a-c0-9\*\#]*)/', 
 						NULL, 
 						$phone
@@ -141,11 +198,20 @@ class SCA {
 	}
 	
 	/**
+	 * get offset
+	 * @return integer
+	 */
+	public function getOffset()
+	{
+		return ( ! $this->_size ? 2 : $this->_size + 4);
+	}
+	
+	/**
 	 * decode phone number
 	 * @param string $letter
 	 * @return string
 	 */
-	private function _map_filter_decode($letter)
+	private static function _map_filter_decode($letter)
 	{
 		switch(hexdec($letter)){
 			case 0x0A: return "*";
@@ -163,7 +229,7 @@ class SCA {
 	 * @param string $letter
 	 * @return string
 	 */
-	private function _map_filter_encode($letter)
+	private static function _map_filter_encode($letter)
 	{
 		switch($letter){
 			case "*": return 'A';

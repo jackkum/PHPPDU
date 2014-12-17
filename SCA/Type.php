@@ -31,7 +31,7 @@ class SCA_Type {
 	const PLAN_UNKNOWN           = 0x00;
 	const PLAN_ISDN              = 0x01;
 	const PLAN_X_121             = 0x02;
-	const PLANL_TELEX            = 0x03;
+	const PLAN_TELEX             = 0x03;
 	const PLAN_NATIONAL          = 0x08;
 	const PLAN_INDIVIDUAL        = 0x09;
 	const PLAN_ERMES             = 0x0A;

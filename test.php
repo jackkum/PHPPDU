@@ -30,16 +30,19 @@
  * for check http://www.diafaan.com/sms-tutorials/gsm-modem-tutorial/online-sms-pdu-decoder/
  */
 
-define('PDU_DEBUG', TRUE);
+//define('PDU_DEBUG', TRUE);
 error_reporting(E_ALL);
 
 set_exception_handler('exceptionHandler');
 
+require_once 'PDU.php';
 require_once 'Submit.php';
 
 $pdu = new Submit();
 
+// set address
 $pdu->setAddress("79025449307");
+// set long message
 $pdu->setData("long long long long long long long long long long long "
 		. "long long long long long long long long long long long "
 		. "long long long long long long long long long long long long long "
@@ -48,9 +51,23 @@ $pdu->setData("long long long long long long long long long long long "
 		. "long long long long long long long long long long "
 		. "long long message...");
 
+// each parts of message
 foreach($pdu->getParts() as $part){
+	// get part class
 	echo get_class($part), PHP_EOL;
-	echo (string) $part, PHP_EOL;
+	// cast to string
+	$str = (string) $part;
+	// out string
+	echo $str, PHP_EOL, PHP_EOL;
+	// parse result string
+	$tmp = PDU::parse($str);
+	
+	// get parts
+	foreach($tmp->getParts() as $_part){
+		echo $_part->getHeader()->getCurrent(), PHP_EOL;
+		echo $tmp->getData()->getData(), PHP_EOL;
+	}
+	
 }
 
 function exceptionHandler($ex)

@@ -67,6 +67,96 @@ class PDU_Data_Header {
 	}
 	
 	/**
+	 * parse header
+	 * @return \self
+	 */
+	public static function parse()
+	{
+		$self = new self(
+			array(
+				'UDHL'     => hexdec(PDU::getPduSubstr(2)),
+				'TYPE'     => hexdec(PDU::getPduSubstr(2)),
+				'PSIZE'    => hexdec(PDU::getPduSubstr(2)),
+				'POINTER'  => hexdec(PDU::getPduSubstr(4)),
+				'SEGMENTS' => hexdec(PDU::getPduSubstr(2)),
+				'CURRENT'  => hexdec(PDU::getPduSubstr(2))
+			)
+		);
+		
+		return $self;
+	}
+	
+	/**
+	 * cast object to array
+	 * @return array
+	 */
+	public function toArray()
+	{
+		return array(
+			'UDHL'     => $this->_UDHL,
+			'TYPE'     => $this->_TYPE,
+			'PSIZE'    => $this->_PSIZE,
+			'POINTER'  => $this->_POINTER,
+			'SEGMENTS' => $this->_SEGMENTS,
+			'CURRENT'  => $this->_CURRENT
+		);
+	}
+	
+	/**
+	 * get header size
+	 * @return integer
+	 */
+	public function getSize()
+	{
+		return $this->_UDHL;
+	}
+	
+	/**
+	 * get header type
+	 * @return integer
+	 */
+	public function getType()
+	{
+		return $this->_TYPE;
+	}
+	
+	/**
+	 * get a pointer size
+	 * @return integer
+	 */
+	public function getPointerSize()
+	{
+		return $this->_PSIZE;
+	}
+	
+	/**
+	 * get a pointer
+	 * @return integer
+	 */
+	public function getPointer()
+	{
+		return $this->_POINTER;
+	}
+	
+	/**
+	 * get a segments
+	 * @return integer
+	 */
+	public function getSegments()
+	{
+		return $this->_SEGMENTS;
+	}
+	
+	/**
+	 * get current segment
+	 * @return integer
+	 */
+	public function getCurrent()
+	{
+		return $this->_CURRENT;
+	}
+	
+	/**
 	 * method for cast to string
 	 * @return string
 	 */

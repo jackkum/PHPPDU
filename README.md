@@ -19,3 +19,23 @@ foreach($pdu->getParts() as $part){
 	echo (string) $part, PHP_EOL;
 }
 ```
+----------------------
+
+```
+$pdu = PDU::parse($str);
+
+echo $pdu->getAddress()->getPhone(), PHP_EOL;
+
+foreach($pdu->getParts() as $part){
+	$header = $part->getHeader();
+	echo "unique: ", $header->getPointer(), PHP_EOL;
+	echo $header->getCurrent(), " of ", $header->getSegments(), PHP_EOL;
+	echo $tmp->getData()->getData(), PHP_EOL;
+}
+
+```
+----------------------
+
+# TODO
+ - Merge parsed messages
+ - Report status pdu type
