@@ -18,6 +18,8 @@
  */
 
 require_once 'SCA.php';
+require_once 'Submit.php';
+require_once 'Deliver.php';
 require_once 'PDU/DCS.php';
 require_once 'PDU/SCTS.php';
 require_once 'PDU/Helper.php';

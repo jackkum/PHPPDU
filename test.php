@@ -36,7 +36,6 @@ error_reporting(E_ALL);
 set_exception_handler('exceptionHandler');
 
 require_once 'PDU.php';
-require_once 'Submit.php';
 
 $pdu = new Submit();
 
@@ -61,6 +60,8 @@ foreach($pdu->getParts() as $part){
 	echo $str, PHP_EOL, PHP_EOL;
 	// parse result string
 	$tmp = PDU::parse($str);
+	
+	$tmp->getAddress()->getPhone();
 	
 	// get parts
 	foreach($tmp->getParts() as $_part){

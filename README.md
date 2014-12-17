@@ -7,7 +7,7 @@ Creating a PDU string for sending sms
 ----------------------
 
 ```
-require_once 'Submit.php';
+require_once 'PDU.php';
 
 $pdu = new Submit();
 
