@@ -88,14 +88,17 @@ class PDU_Data_Part {
 		
 		switch($alphabet){
 			case PDU_DCS::ALPHABET_DEFAULT:
+				PDU::debug("PDU_Helper::decode7bit()");
 				$text = PDU_Helper::decode7bit($hex);
 				break;
 			
 			case PDU_DCS::ALPHABET_8BIT:
+				PDU::debug("PDU_Helper::decode8bit()");
 				$text = PDU_Helper::decode8bit($hex);
 				break;
 			
 			case PDU_DCS::ALPHABET_UCS2:
+				PDU::debug("PDU_Helper::decode16Bit()");
 				$text = PDU_Helper::decode16Bit($hex);
 				break;
 			

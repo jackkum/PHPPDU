@@ -27,7 +27,7 @@ class PDU_Helper {
 	 * @param integer $bytes
 	 * @return integer|boolean
 	 */
-	public static function ordUTF8($c, $index = 0, &$bytes = null)
+	public static function ordUTF8($c)
 	{
 		$len = strlen($c);
 		$bytes = 0;
@@ -60,6 +60,17 @@ class PDU_Helper {
 	}
 	
 	/**
+	 * chr function 
+	 * @link http://php.net/manual/ru/function.chr.php#88611
+	 * @param integer $u
+	 * @return string
+	 */
+	public static function chrUTF8($u)
+	{
+		return mb_convert_encoding('&#' . intval($u) . ';', 'UTF-8', 'HTML-ENTITIES');
+	}
+	
+	/**
 	 * decode message from unicode
 	 * @param string $text
 	 * @return srting
@@ -69,7 +80,7 @@ class PDU_Helper {
 		return implode(
 			"",
 			array_map(
-				'chr',
+				array('self', 'chrUTF8'),
 				array_map(
 					'hexdec',
 					str_split(
@@ -91,7 +102,7 @@ class PDU_Helper {
 		return implode(
 			"",
 			array_map(
-				'chr',
+				array('self', 'chrUTF8'),
 				array_map(
 					'hexdec',
 					str_split(

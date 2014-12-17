@@ -122,6 +122,42 @@ class PDU_DCS {
 		$DCS->_encodeGroup  = 0x0F&($byte>>4);
 		$DCS->_dataEncoding = 0x0F&$byte;
 		
+		$DCS->_alphabet     = (3 & ($DCS->_dataEncoding>>2));
+		$DCS->_classMessage = (3 & $DCS->_dataEncoding);
+		
+		switch($DCS->_encodeGroup){
+			case 0x0C: $DCS->_discardMessage            = TRUE; break;
+			case 0x0D: $DCS->_storeMessage              = TRUE; break;
+			case 0x0E: $DCS->_storeMessageUCS2          = TRUE; break;
+			case 0x0F: 
+				$DCS->_dataCodingAndMessageClass = TRUE; 
+				
+				if($DCS->_dataEncoding & (1<<2)){
+					$DCS->_alphabet = self::ALPHABET_8BIT;
+				}
+				
+				break;
+			
+			default:
+				
+				if($DCS->_encodeGroup & (1<<4)){
+					$DCS->_useMessageClass = TRUE;
+				}
+				
+				if($DCS->_encodeGroup & (1<<5)){
+					$DCS->_compressedText = TRUE;
+				}
+		}
+		
+		if($DCS->_discardMessage || $DCS->_storeMessage || $DCS->_storeMessageUCS2){
+			
+			if($DCS->_dataEncoding & (1<<3)){
+				$DCS->_messageIndication     = TRUE;
+				$DCS->_messageIndicationType = (3 & $DCS->_dataEncoding);
+			}
+			
+		}
+		
 		return $DCS;
 	}
 
@@ -196,7 +232,7 @@ class PDU_DCS {
 					// bit is set to 0
 					break;
 				default:
-					// @TODO: need trigger for decode message
+					
 					break;
 					
 			}

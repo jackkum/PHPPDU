@@ -17,9 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'SCA.php';
 require_once 'Submit.php';
 require_once 'Deliver.php';
+require_once 'Report.php';
+require_once 'PDU/SCA.php';
 require_once 'PDU/DCS.php';
 require_once 'PDU/SCTS.php';
 require_once 'PDU/Helper.php';
@@ -30,7 +31,7 @@ abstract class PDU {
 	
 	/**
 	 * Service Centre Address
-	 * @var SCA
+	 * @var PDU_SCA
 	 */
 	protected $_sca;
 	
@@ -42,7 +43,7 @@ abstract class PDU {
 	
 	/**
 	 * Originator or Destination Address
-	 * @var SCA
+	 * @var PDU_SCA
 	 */
 	protected $_address;
 	
@@ -111,7 +112,7 @@ abstract class PDU {
 		self::$_pduParse = $PDU;
 		
 		// parse service center address
-		$sca = SCA::parse();
+		$sca = PDU_SCA::parse(FALSE);
 		
 		// parse type of sms
 		$type = PDU_Type::parse();
@@ -126,7 +127,7 @@ abstract class PDU {
 				break;
 			
 			case PDU_Type::SMS_REPORT:
-				
+				$self = new Report();
 				break;
 			
 			default:
@@ -144,29 +145,47 @@ abstract class PDU {
 			$self->_mr = hexdec(PDU::getPduSubstr(2));
 		}
 		
-		// parse sms address
-		$self->_address = SCA::parse();
-		
-		// get pid
-		$self->_pid = hexdec(PDU::getPduSubstr(2));
-		
-		// parse dcs
-		$self->_dcs = PDU_DCS::parse();
-		
-		// if this submit sms
-		if($self->_type instanceof PDU_Type_Submit){
-			// parse vp
-			$self->_vp = PDU_VP::parse($self);
-		} else {
-			// parse scts
-			$self->_scts = PDU_SCTS::parse();
+		// if this is submit type
+		if($self->_type instanceof PDU_Type_Report){
+			// get reference
+			$self->_reference = hexdec(PDU::getPduSubstr(2));
 		}
 		
-		// get data length
-		$self->_udl = hexdec(PDU::getPduSubstr(2));
+		// parse sms address
+		$self->_address = PDU_SCA::parse();
 		
-		// parse data
-		$self->_ud = PDU_Data::parse($self);
+		// if is the report status
+		if($self->_type instanceof PDU_Type_Report){
+			// parse timestamp
+			$self->_timestamp = PDU_SCTS::parse();
+			
+			// parse discharge
+			$self->_discharge = PDU_SCTS::parse();
+			
+			// get status
+			$self->_status = hexdec(PDU::getPduSubstr(2));
+		} else {
+			// get pid
+			$self->_pid = hexdec(PDU::getPduSubstr(2));
+
+			// parse dcs
+			$self->_dcs = PDU_DCS::parse();
+
+			// if this submit sms
+			if($self->_type instanceof PDU_Type_Submit){
+				// parse vp
+				$self->_vp = PDU_VP::parse($self);
+			} else {
+				// parse scts
+				$self->_scts = PDU_SCTS::parse();
+			}
+
+			// get data length
+			$self->_udl = hexdec(PDU::getPduSubstr(2));
+
+			// parse data
+			$self->_ud = PDU_Data::parse($self);
+		}
 		
 		return $self;
 	}
@@ -188,7 +207,7 @@ abstract class PDU {
 	public function setSca($number = NULL)
 	{
 		if( ! $this->_sca){
-			$this->_sca = new SCA();
+			$this->_sca = new PDU_SCA(FALSE);
 		}
 		
 		if($number){
@@ -200,7 +219,7 @@ abstract class PDU {
 	
 	/**
 	 * getter for SCA
-	 * @return SCA
+	 * @return PDU_SCA
 	 */
 	public function getSca()
 	{
@@ -230,14 +249,14 @@ abstract class PDU {
 	 */
 	public function setAddress($number)
 	{
-		$this->_address = new SCA();
+		$this->_address = new PDU_SCA();
 		$this->_address->setPhone($number);
 		return $this;
 	}
 	
 	/**
 	 * getter address
-	 * @return SCA
+	 * @return PDU_SCA
 	 */
 	public function getAddress()
 	{

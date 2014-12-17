@@ -19,12 +19,13 @@
 
 require_once 'PDU/Type/Deliver.php';
 require_once 'PDU/Type/Submit.php';
+require_once 'PDU/Type/Report.php';
 
 abstract class PDU_Type {
 	
 	const SMS_SUBMIT   = 0x01;
 	const SMS_DELIVER  = 0x00;
-	const SMS_REPORT   = 0x03;
+	const SMS_REPORT   = 0x02;
 	
 	const VPF_NONE     = 0x00;
 	const VPF_SIEMENS  = 0x01;
@@ -86,8 +87,8 @@ abstract class PDU_Type {
 				$type = new PDU_Type_Submit();
 				break;
 			case self::SMS_REPORT:
-				throw new Exception("Not ready :(");
-				//break;
+				$type = new PDU_Type_Report();
+				break;
 			default:
 				throw new Exception("Unknown type sms");
 		}

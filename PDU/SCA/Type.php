@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class SCA_Type {
+class PDU_SCA_Type {
 	
 	const TYPE_UNKNOWN           = 0x00;
 	const TYPE_INTERNATIONAL     = 0x01;

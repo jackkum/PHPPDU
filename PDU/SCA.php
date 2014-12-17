@@ -17,14 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'SCA/Type.php';
+require_once 'PDU/SCA/Type.php';
 require_once 'PDU/Helper.php';
 
-class SCA {
+class PDU_SCA {
 	
 	/**
 	 * Type of number
-	 * @var SCA_Type
+	 * @var PDU_SCA_Type
 	 */
 	protected $_type   = NULL;
 	
@@ -42,27 +42,44 @@ class SCA {
 	protected $_phone  = NULL;
 	
 	/**
-	 * create object
+	 * how claclulate size (octets or digits)
+	 * OA and DA size is on digits
+	 * @var boolean
 	 */
-	public function __construct()
+	protected $_isAddress = FALSE;
+	
+	/**
+	 * create object
+	 * @param boolean $isAddress 
+	 */
+	public function __construct($isAddress = TRUE)
 	{
 		// create sca type
-		$this->setType(new SCA_Type());
+		$this->setType(new PDU_SCA_Type());
+		
+		$this->_isAddress = !!$isAddress;
 	}
 	
-	public static function parse()
+	public static function parse($isAddress = TRUE)
 	{
-		$SCA     = new self();
+		$SCA     = new self($isAddress);
 		$size    = hexdec(PDU::getPduSubstr(2));
 		
 		if($size){
 			
-			if(($size % 2) != 0){
-				$size++;
+			// if is OA or DA size in digits
+			if($isAddress){
+				if(($size % 2) != 0){
+					$size++;
+				}
+			// else size ib octets
+			} else {
+				$size--;
+				$size *= 2;
 			}
 			
 			$SCA->setType(
-				new SCA_Type(
+				new PDU_SCA_Type(
 					hexdec(PDU::getPduSubstr(2))
 				)
 			);
@@ -70,11 +87,11 @@ class SCA {
 			$hex = PDU::getPduSubstr($size);
 			
 			switch($SCA->getType()->getType()){
-				case SCA_Type::TYPE_UNKNOWN:
-				case SCA_Type::TYPE_INTERNATIONAL:
-				case SCA_Type::TYPE_ACCEPTER_INTO_NET:
-				case SCA_Type::TYPE_SUBSCRIBER_NET:
-				case SCA_Type::TYPE_TRIMMED:
+				case PDU_SCA_Type::TYPE_UNKNOWN:
+				case PDU_SCA_Type::TYPE_INTERNATIONAL:
+				case PDU_SCA_Type::TYPE_ACCEPTER_INTO_NET:
+				case PDU_SCA_Type::TYPE_SUBSCRIBER_NET:
+				case PDU_SCA_Type::TYPE_TRIMMED:
 					
 					$SCA->setPhone(
 						implode(
@@ -91,7 +108,7 @@ class SCA {
 					
 					break;
 				
-				case SCA_Type::TYPE_ALPHANUMERICAL:
+				case PDU_SCA_Type::TYPE_ALPHANUMERICAL:
 					
 					$SCA->setPhone(
 						PDU_Helper::decode7bit($hex)
@@ -151,7 +168,7 @@ class SCA {
 	
 	/**
 	 * getter for phone type
-	 * @return SCA_Type
+	 * @return PDU_SCA_Type
 	 */
 	public function getType()
 	{
@@ -160,11 +177,20 @@ class SCA {
 	
 	/**
 	 * setter type
-	 * @param SCA_Type $type
+	 * @param PDU_SCA_Type $type
 	 */
-	public function setType(SCA_Type $type)
+	public function setType(PDU_SCA_Type $type)
 	{
 		$this->_type = $type;
+	}
+	
+	/**
+	 * check is address
+	 * @return boolean
+	 */
+	public function isAddress()
+	{
+		return !!$this->_isAddress;
 	}
 	
 	/**
@@ -192,7 +218,7 @@ class SCA {
 			}
 		}
 		
-		PDU::debug("SCA::__toString() " . $PDU);
+		PDU::debug("PDU_SCA::__toString() " . $PDU);
 		
 		return $PDU;
 	}

@@ -40,23 +40,15 @@ class PDU_SCTS {
 	 */
 	public static function parse()
 	{
-		$hex = PDU::getPduSubstr(14);
-		list($year, $month, $day, $hour, $minute, $second, $tmp) = array_map(
-			'strrev',
-			str_split($hex,2)
+		$hex    = PDU::getPduSubstr(14);
+		$params = array_merge(
+			array("20%02d-%02d-%02d %02d:%02d:%02d"),
+			array_map('intval', array_map('strrev', str_split($hex,2)))
 		);
 		
-		return new self(
-			sprintf(
-				"20%02D-%02D-%02D %02D:%02D:%02D",
-				$year,
-				$month,
-				$day,
-				$hour,
-				$minute,
-				$second
-			)
-		);
+		$dtime = call_user_func_array('sprintf', $params);
+		
+		return new self($dtime);
 	}
 	
 	/**
