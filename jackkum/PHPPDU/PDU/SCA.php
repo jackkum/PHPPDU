@@ -17,14 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'PDU/SCA/Type.php';
-require_once 'PDU/Helper.php';
+namespace jackkum\PHPPDU\PDU;
 
-class PDU_SCA {
+class SCA {
 	
 	/**
 	 * Type of number
-	 * @var PDU_SCA_Type
+	 * @var SCA\Type
 	 */
 	protected $_type   = NULL;
 	
@@ -55,7 +54,7 @@ class PDU_SCA {
 	public function __construct($isAddress = TRUE)
 	{
 		// create sca type
-		$this->setType(new PDU_SCA_Type());
+		$this->setType(new SCA\Type());
 		
 		$this->_isAddress = !!$isAddress;
 	}
@@ -79,7 +78,7 @@ class PDU_SCA {
 			}
 			
 			$SCA->setType(
-				new PDU_SCA_Type(
+				new SCA\Type(
 					hexdec(PDU::getPduSubstr(2))
 				)
 			);
@@ -87,11 +86,11 @@ class PDU_SCA {
 			$hex = PDU::getPduSubstr($size);
 			
 			switch($SCA->getType()->getType()){
-				case PDU_SCA_Type::TYPE_UNKNOWN:
-				case PDU_SCA_Type::TYPE_INTERNATIONAL:
-				case PDU_SCA_Type::TYPE_ACCEPTER_INTO_NET:
-				case PDU_SCA_Type::TYPE_SUBSCRIBER_NET:
-				case PDU_SCA_Type::TYPE_TRIMMED:
+				case SCA\Type::TYPE_UNKNOWN:
+				case SCA\Type::TYPE_INTERNATIONAL:
+				case SCA\Type::TYPE_ACCEPTER_INTO_NET:
+				case SCA\Type::TYPE_SUBSCRIBER_NET:
+				case SCA\Type::TYPE_TRIMMED:
 					
 					$SCA->setPhone(
 						implode(
@@ -108,10 +107,10 @@ class PDU_SCA {
 					
 					break;
 				
-				case PDU_SCA_Type::TYPE_ALPHANUMERICAL:
+				case SCA\Type::TYPE_ALPHANUMERICAL:
 					
 					$SCA->setPhone(
-						PDU_Helper::decode7bit($hex)
+						PDU\Helper::decode7bit($hex)
 					);
 					
 					break;
@@ -168,7 +167,7 @@ class PDU_SCA {
 	
 	/**
 	 * getter for phone type
-	 * @return PDU_SCA_Type
+	 * @return SCA\Type
 	 */
 	public function getType()
 	{
@@ -177,9 +176,9 @@ class PDU_SCA {
 	
 	/**
 	 * setter type
-	 * @param PDU_SCA_Type $type
+	 * @param SCA\Type $type
 	 */
-	public function setType(PDU_SCA_Type $type)
+	public function setType(SCA\Type $type)
 	{
 		$this->_type = $type;
 	}
@@ -218,7 +217,7 @@ class PDU_SCA {
 			}
 		}
 		
-		PDU::debug("PDU_SCA::__toString() " . $PDU);
+		PDU::debug("SCA::__toString() " . $PDU);
 		
 		return $PDU;
 	}

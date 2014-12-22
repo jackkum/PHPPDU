@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class PDU_Helper {
+namespace jackkum\PHPPDU\PDU;
+
+class Helper {
 	
 	/**
 	 * ord function
@@ -27,7 +29,7 @@ class PDU_Helper {
 	 * @param integer $bytes
 	 * @return integer|boolean
 	 */
-	public static function ordUTF8($c)
+	public static function ordUTF8($c, $index = 0, &$bytes = null)
 	{
 		$len = strlen($c);
 		$bytes = 0;

@@ -17,9 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'PDU/Type.php';
+namespace jackkum\PHPPDU\PDU\Type;
 
-class PDU_Type_Deliver extends PDU_Type {
+use jackkum\PHPPDU\PDU;
+
+class Deliver extends PDU\Type {
 	
 	public function __construct(array $params = array())
 	{

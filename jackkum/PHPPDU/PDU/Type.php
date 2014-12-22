@@ -17,11 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'PDU/Type/Deliver.php';
-require_once 'PDU/Type/Submit.php';
-require_once 'PDU/Type/Report.php';
+namespace jackkum\PHPPDU\PDU;
 
-abstract class PDU_Type {
+abstract class Type {
 	
 	const SMS_SUBMIT   = 0x01;
 	const SMS_DELIVER  = 0x00;
@@ -71,7 +69,7 @@ abstract class PDU_Type {
 	
 	/**
 	 * parse sms type
-	 * @return \PDU_Type
+	 * @return PDU\Type
 	 * @throws Exception
 	 */
 	public static function parse()
@@ -81,13 +79,13 @@ abstract class PDU_Type {
 		
 		switch((3&$byte)){
 			case self::SMS_DELIVER:
-				$type = new PDU_Type_Deliver();
+				$type = new PDU\Type\Deliver();
 				break;
 			case self::SMS_SUBMIT:
-				$type = new PDU_Type_Submit();
+				$type = new PDU\Type\Submit();
 				break;
 			case self::SMS_REPORT:
-				$type = new PDU_Type_Report();
+				$type = new PDU\Type\Report();
 				break;
 			default:
 				throw new Exception("Unknown type sms");

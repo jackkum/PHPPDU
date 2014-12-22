@@ -17,8 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'PDU.php';
-require_once 'PDU/Type/Report.php';
+namespace jackkum\PHPPDU;
 
 class Report extends PDU {
 	
@@ -30,13 +29,13 @@ class Report extends PDU {
 	
 	/**
 	 * datetime
-	 * @var PDU_SCTS
+	 * @var PDU\SCTS
 	 */
 	protected $_timestamp;
 	
 	/**
 	 * datetime
-	 * @var PDU_SCTS
+	 * @var PDU\SCTS
 	 */
 	protected $_discharge;
 	
@@ -78,7 +77,7 @@ class Report extends PDU {
 	 */
 	public function setType(array $params = array())
 	{
-		$this->_type = new PDU_Type_Report($params);
+		$this->_type = new PDU\Type\Report($params);
 	}
 	
 	/**
@@ -92,7 +91,7 @@ class Report extends PDU {
 	
 	/**
 	 * 
-	 * @return PDU_SCTS
+	 * @return PDU\SCTS
 	 */
 	public function getDateTime()
 	{
@@ -101,7 +100,7 @@ class Report extends PDU {
 	
 	/**
 	 * 
-	 * @return PDU_SCTS
+	 * @return PDU\SCTS
 	 */
 	public function getDischarge()
 	{

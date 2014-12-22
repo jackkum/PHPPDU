@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class PDU_DCS {
+namespace jackkum\PHPPDU\PDU;
+
+class DCS {
 	
 	/**
 	 * GSM 03.38 V7.0.0 (1998-07).

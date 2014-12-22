@@ -17,10 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'PDU/Helper.php';
-require_once 'PDU/Data/Part.php';
+namespace jackkum\PHPPDU\PDU;
 
-class PDU_Data {
+class Data {
 	
 	const HEADER_SIZE = 8;
 	
@@ -58,7 +57,7 @@ class PDU_Data {
 	 * create object data
 	 * @param PDU $pdu
 	 */
-	public function __construct(PDU $pdu)
+	public function __construct(\jackkum\PHPPDU\PDU $pdu)
 	{
 		// set encoding
 		mb_internal_encoding('utf-8');
@@ -71,15 +70,15 @@ class PDU_Data {
 	 * @param PDU $pdu
 	 * @return \self
 	 */
-	public static function parse(PDU $pdu)
+	public static function parse(\jackkum\PHPPDU\PDU $pdu)
 	{
 		$self = new self($pdu);
 		
-		if($pdu->getDcs()->getTextAlphabet() == PDU_DCS::ALPHABET_UCS2){
+		if($pdu->getDcs()->getTextAlphabet() == DCS::ALPHABET_UCS2){
 			$self->_isUnicode = TRUE;
 		}
 		
-		list($self->_data, $self->_size, $part) = PDU_Data_Part::parse($self);
+		list($self->_data, $self->_size, $part) = Data\Part::parse($self);
 		$self->_parts[] = $part;
 		
 		return $self;
@@ -113,7 +112,7 @@ class PDU_Data {
 		// check message
 		for($i = 0; $i < mb_strlen($this->_data); $i++){
 			// get byte
-			$byte = PDU_Helper::ordUTF8(mb_substr($this->_data, $i, 1));
+			$byte = Helper::ordUTF8(mb_substr($this->_data, $i, 1));
 			
 			if($byte > 0xC0){
 				$this->_isUnicode = TRUE;
@@ -138,7 +137,7 @@ class PDU_Data {
 			$this->getPdu()
 				 ->getDcs()
 				 ->setTextCompressed(FALSE)					// no compress
-				 ->setTextAlphabet(PDU_DCS::ALPHABET_UCS2);	// type alphabet is UCS2
+				 ->setTextAlphabet(DCS::ALPHABET_UCS2);	// type alphabet is UCS2
 		}
 		
 		// if message is compressed
@@ -171,19 +170,19 @@ class PDU_Data {
 			$size = 0;
 			switch($this->getPdu()->getDcs()->getTextAlphabet()){
 				
-				case PDU_DCS::ALPHABET_DEFAULT:
-					PDU::debug("PDU_Helper::encode7bit()");
-					list($size,$part) = PDU_Helper::encode7bit($text);
+				case DCS::ALPHABET_DEFAULT:
+					PDU::debug("Helper::encode7bit()");
+					list($size,$part) = Helper::encode7bit($text);
 					break;
 				
-				case PDU_DCS::ALPHABET_8BIT:
-					PDU::debug("PDU_Helper::encode8BitMessage()");
-					list($size,$part) = PDU_Helper::encode8Bit($text);
+				case DCS::ALPHABET_8BIT:
+					PDU::debug("Helper::encode8BitMessage()");
+					list($size,$part) = Helper::encode8Bit($text);
 					break;
 				
-				case PDU_DCS::ALPHABET_UCS2:
-					PDU::debug("PDU_Helper::encode16BitMessage()");
-					list($size,$part) = PDU_Helper::encode16Bit($text);
+				case DCS::ALPHABET_UCS2:
+					PDU::debug("Helper::encode16BitMessage()");
+					list($size,$part) = Helper::encode16Bit($text);
 					break;
 				
 				default:
@@ -194,7 +193,7 @@ class PDU_Data {
 				$size += self::HEADER_SIZE;
 			}
 			
-			$this->_parts[] = new PDU_Data_Part(
+			$this->_parts[] = new Data\Part(
 				$this,
 				$part,
 				$size,

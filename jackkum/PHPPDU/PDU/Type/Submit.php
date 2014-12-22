@@ -17,19 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'PDU/Type.php';
+namespace jackkum\PHPPDU\PDU\Type;
 
-class PDU_Type_Report extends PDU_Type {
+use jackkum\PHPPDU\PDU;
+
+class Submit extends PDU\Type {
 	
 	public function __construct(array $params = array())
 	{
 		$this->_rp   = isset($params['rp'])   ? 1 & $params['rp']   : 0;
 		$this->_udhi = isset($params['udhi']) ? 1 & $params['udhi'] : 0;
-		$this->_srr  = isset($params['srr'])  ? 1 & $params['srr']  : 0;
-		
-		//More Message to Send
-		$this->_rd   = isset($params['mms'])  ? 1 & $params['mms']   : 0;
-		$this->_mti  = 0x02; // SMS-REPORT
-		$this->_vpf  = 0x00; // not used
+		$this->_srr  = isset($params['srr'])  ? 1 & $params['srr']  : 1;
+		$this->_vpf  = isset($params['vpf'])  ? 3 & $params['vpf']  : 0;
+		$this->_rd   = isset($params['rd'])   ? 1 & $params['rd']   : 0;
+		$this->_mti  = 0x01; // SMS-SUBMIT
 	}
 }
