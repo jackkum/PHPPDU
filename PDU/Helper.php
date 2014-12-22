@@ -27,7 +27,7 @@ class PDU_Helper {
 	 * @param integer $bytes
 	 * @return integer|boolean
 	 */
-	public static function ordUTF8($c)
+	public static function ordUTF8($c, $index = 0, &$bytes = null)
 	{
 		$len = strlen($c);
 		$bytes = 0;
