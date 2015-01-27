@@ -1,6 +1,6 @@
 PHPPDU
 ======
-[![Build Status](https://travis-ci.org/jackkum/PHPPDU.png?branch=master)](https://travis-ci.org/jackkum/PHPPDU)
+[![Build Status](https://travis-ci.org/jackkum/PHPPDU.svg?branch=master)](https://travis-ci.org/jackkum/PHPPDU)
 
 Creating a PDU string for sending sms
 
