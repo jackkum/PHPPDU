@@ -50,7 +50,7 @@ class Part {
 	 * @param string $data
 	 * @param array|NULL $header
 	 */
-	public function __construct(Data $parent, $data, $size, $header = NULL)
+	public function __construct(\jackkum\PHPPDU\PDU\Data $parent, $data, $size, $header = NULL)
 	{
 		// parent 
 		$this->_parent = $parent;
@@ -74,32 +74,32 @@ class Part {
 	 * @return array [decded text, text size, self object]
 	 * @throws Exception
 	 */
-	public static function parse(Data $data)
+	public static function parse(\jackkum\PHPPDU\PDU\Data $data)
 	{
 		$alphabet = $data->getPdu()->getDcs()->getTextAlphabet();
 		$header   = NULL;
-		$length   = $data->getPdu()->getUdl() * ($alphabet == DCS::ALPHABET_UCS2 ? 4 : 2);
+		$length   = $data->getPdu()->getUdl() * ($alphabet == \jackkum\PHPPDU\PDU\DCS::ALPHABET_UCS2 ? 4 : 2);
 		
 		if($data->getPdu()->getType()->getUdhi()){
 			$header = Header::parse();
 		}
 		
-		$hex = PDU::getPduSubstr($length);
+		$hex = \jackkum\PHPPDU\PDU::getPduSubstr($length);
 		
 		switch($alphabet){
-			case DCS::ALPHABET_DEFAULT:
-				PDU::debug("Helper::decode7bit()");
-				$text = Helper::decode7bit($hex);
+			case \jackkum\PHPPDU\PDU\DCS::ALPHABET_DEFAULT:
+				\jackkum\PHPPDU\PDU::debug("Helper::decode7bit()");
+				$text = \jackkum\PHPPDU\PDU\Helper::decode7bit($hex);
 				break;
 			
-			case DCS::ALPHABET_8BIT:
-				PDU::debug("Helper::decode8bit()");
-				$text = Helper::decode8bit($hex);
+			case \jackkum\PHPPDU\PDU\DCS::ALPHABET_8BIT:
+				\jackkum\PHPPDU\PDU::debug("Helper::decode8bit()");
+				$text = \jackkum\PHPPDU\PDU\Helper::decode8bit($hex);
 				break;
 			
-			case DCS::ALPHABET_UCS2:
-				PDU::debug("Helper::decode16Bit()");
-				$text = Helper::decode16Bit($hex);
+			case \jackkum\PHPPDU\PDU\DCS::ALPHABET_UCS2:
+				\jackkum\PHPPDU\PDU::debug("Helper::decode16Bit()");
+				$text = \jackkum\PHPPDU\PDU\Helper::decode16Bit($hex);
 				break;
 			
 			default:
@@ -183,10 +183,10 @@ class Part {
 	public function __toString()
 	{
 		
-		PDU::debug("_getPduString() " . $this->_getPduString());
-		PDU::debug("_getPartSize() " . $this->_getPartSize());
-		PDU::debug("getHeader() " . $this->getHeader());
-		PDU::debug("getData() " . $this->getData());
+		\jackkum\PHPPDU\PDU::debug("_getPduString() " . $this->_getPduString());
+		\jackkum\PHPPDU\PDU::debug("_getPartSize() " . $this->_getPartSize());
+		\jackkum\PHPPDU\PDU::debug("getHeader() " . $this->getHeader());
+		\jackkum\PHPPDU\PDU::debug("getData() " . $this->getData());
 		
 		// concate pdu, size of part, headers, data
 		return $this->_getPduString() . 

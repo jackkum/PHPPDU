@@ -19,7 +19,12 @@
 
 namespace jackkum\PHPPDU;
 
+define('PDU_BASE_PATH', realpath(dirname(__FILE__)));
+
 class Autoloader {
+	
+	const VENDOR  = 'jackkum';
+	const PROJECT = 'PHPPDU';
 	
 	public static function register()
 	{
@@ -28,19 +33,27 @@ class Autoloader {
 
 	public static function aoutload($file)
 	{
-		$path = __DIR__ . 
-				DIRECTORY_SEPARATOR . '..' . 
-				DIRECTORY_SEPARATOR . ".." . 
-				DIRECTORY_SEPARATOR;
+		$parts = explode("\\", $file);
 		
-		$filepath = $path . str_replace('\\', '/', $file) . '.php';
-		echo "# " . $filepath . "\n";
-
-		if( ! file_exists($filepath)){
-			$filepath = $path . 'jackkum'.DIRECTORY_SEPARATOR.'PHPPDU'.DIRECTORY_SEPARATOR . str_replace('\\', '/', $file) . '.php';
-			echo "# " . $filepath . "\n";
+		if($parts[0] != self::VENDOR){
+			return;
 		}
 		
-		require_once($filepath);
+		array_shift($parts);
+		
+		if($parts[0] != self::PROJECT){
+			return;
+		}
+		
+		array_shift($parts);
+		
+		$path = PDU_BASE_PATH . DIRECTORY_SEPARATOR;
+		
+		$filepath = $path . implode(DIRECTORY_SEPARATOR, $parts) . '.php';
+		
+		if(file_exists($filepath)){
+			require_once($filepath);
+		}
+		
 	}
 }

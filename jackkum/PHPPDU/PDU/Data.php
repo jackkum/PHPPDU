@@ -72,7 +72,7 @@ class Data {
 	 */
 	public static function parse(\jackkum\PHPPDU\PDU $pdu)
 	{
-		$self = new self($pdu);
+		$self = new Data($pdu);
 		
 		if($pdu->getDcs()->getTextAlphabet() == DCS::ALPHABET_UCS2){
 			$self->_isUnicode = TRUE;
@@ -171,17 +171,17 @@ class Data {
 			switch($this->getPdu()->getDcs()->getTextAlphabet()){
 				
 				case DCS::ALPHABET_DEFAULT:
-					PDU::debug("Helper::encode7bit()");
+					\jackkum\PHPPDU\PDU::debug("Helper::encode7bit()");
 					list($size,$part) = Helper::encode7bit($text);
 					break;
 				
 				case DCS::ALPHABET_8BIT:
-					PDU::debug("Helper::encode8BitMessage()");
+					\jackkum\PHPPDU\PDU::debug("Helper::encode8BitMessage()");
 					list($size,$part) = Helper::encode8Bit($text);
 					break;
 				
 				case DCS::ALPHABET_UCS2:
-					PDU::debug("Helper::encode16BitMessage()");
+					\jackkum\PHPPDU\PDU::debug("Helper::encode16BitMessage()");
 					list($size,$part) = Helper::encode16Bit($text);
 					break;
 				

@@ -74,18 +74,18 @@ abstract class Type {
 	 */
 	public static function parse()
 	{
-		$byte = hexdec(PDU::getPduSubstr(2));
+		$byte = hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2));
 		$type = NULL;
 		
 		switch((3&$byte)){
 			case self::SMS_DELIVER:
-				$type = new PDU\Type\Deliver();
+				$type = new Type\Deliver();
 				break;
 			case self::SMS_SUBMIT:
-				$type = new PDU\Type\Submit();
+				$type = new Type\Submit();
 				break;
 			case self::SMS_REPORT:
-				$type = new PDU\Type\Report();
+				$type = new Type\Report();
 				break;
 			default:
 				throw new Exception("Unknown type sms");

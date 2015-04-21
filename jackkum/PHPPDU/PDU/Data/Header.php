@@ -76,12 +76,12 @@ class Header {
 	{
 		$self = new self(
 			array(
-				'UDHL'     => hexdec(PDU::getPduSubstr(2)),
-				'TYPE'     => hexdec(PDU::getPduSubstr(2)),
-				'PSIZE'    => hexdec(PDU::getPduSubstr(2)),
-				'POINTER'  => hexdec(PDU::getPduSubstr(4)),
-				'SEGMENTS' => hexdec(PDU::getPduSubstr(2)),
-				'CURRENT'  => hexdec(PDU::getPduSubstr(2))
+				'UDHL'     => hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2)),
+				'TYPE'     => hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2)),
+				'PSIZE'    => hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2)),
+				'POINTER'  => hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(4)),
+				'SEGMENTS' => hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2)),
+				'CURRENT'  => hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2))
 			)
 		);
 		

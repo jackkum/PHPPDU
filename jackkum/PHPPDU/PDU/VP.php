@@ -54,17 +54,17 @@ class VP {
 	 * @return \self
 	 * @throws Exception
 	 */
-	public static function parse(PDU $pdu)
+	public static function parse(\jackkum\PHPPDU\Submit $pdu)
 	{
 		$vp = new self($pdu);
 		
 		switch($pdu->getType()->getVpf()){
-			case PDU\Type::VPF_NONE:     return $vp;
-			case PDU\Type::VPF_ABSOLUTE: return PDU\SCTS::parse();
+			case Type::VPF_NONE:     return $vp;
+			case Type::VPF_ABSOLUTE: return SCTS::parse();
 			
-			case PDU\Type::VPF_RELATIVE:
+			case Type::VPF_RELATIVE:
 				
-				$byte = hexdec(PDU::getPduSubstr(2));
+				$byte = hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2));
 				
 				if($byte <= 143){
 					$vp->_interval = ($byte+1) * (5*60);
@@ -122,13 +122,13 @@ class VP {
 		
 		// absolute value
 		if($this->_datetime){
-			$type->setVpf(PDU\Type::VPF_ABSOLUTE);
+			$type->setVpf(Type::VPF_ABSOLUTE);
 			return (string) (new SCTS($this->_datetime));
 		}
 		
 		// relative value in seconds
 		if($this->_interval){
-			$type->setVpf(PDU\Type::VPF_RELATIVE);
+			$type->setVpf(Type::VPF_RELATIVE);
 			
 			$minutes = ceil($this->_interval / 60);
 			$hours   = ceil($this->_interval / 60 / 60);
@@ -147,7 +147,7 @@ class VP {
 		}
 		
 		// vpf not used
-		$type->setVpf(PDU\Type::VPF_NONE);
+		$type->setVpf(Type::VPF_NONE);
 		
 		return "";
 	}

@@ -62,7 +62,7 @@ class SCA {
 	public static function parse($isAddress = TRUE)
 	{
 		$SCA     = new self($isAddress);
-		$size    = hexdec(PDU::getPduSubstr(2));
+		$size    = hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2));
 		
 		if($size){
 			
@@ -79,11 +79,11 @@ class SCA {
 			
 			$SCA->setType(
 				new SCA\Type(
-					hexdec(PDU::getPduSubstr(2))
+					hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2))
 				)
 			);
 			
-			$hex = PDU::getPduSubstr($size);
+			$hex = \jackkum\PHPPDU\PDU::getPduSubstr($size);
 			
 			switch($SCA->getType()->getType()){
 				case SCA\Type::TYPE_UNKNOWN:
@@ -110,7 +110,7 @@ class SCA {
 				case SCA\Type::TYPE_ALPHANUMERICAL:
 					
 					$SCA->setPhone(
-						PDU\Helper::decode7bit($hex)
+						\jackkum\PHPPDU\PDU\Helper::decode7bit($hex)
 					);
 					
 					break;
@@ -217,7 +217,7 @@ class SCA {
 			}
 		}
 		
-		PDU::debug("SCA::__toString() " . $PDU);
+		\jackkum\PHPPDU\PDU::debug("SCA::__toString() " . $PDU);
 		
 		return $PDU;
 	}
