@@ -17,7 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class PDU_Data_Header {
+namespace jackkum\PHPPDU\PDU\Data;
+
+use jackkum\PHPPDU\PDU;
+
+class Header {
 	
 	/**
 	 * 

@@ -17,33 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'Submit.php';
-require_once 'Deliver.php';
-require_once 'Report.php';
-require_once 'PDU/SCA.php';
-require_once 'PDU/DCS.php';
-require_once 'PDU/SCTS.php';
-require_once 'PDU/Helper.php';
-require_once 'PDU/Data.php';
-require_once 'PDU/VP.php';
+namespace jackkum\PHPPDU;
 
 abstract class PDU {
 	
 	/**
 	 * Service Centre Address
-	 * @var PDU_SCA
+	 * @var PDU\SCA
 	 */
 	protected $_sca;
 	
 	/**
 	 * Transport Protocol Data Unit
-	 * @var PDU_Type
+	 * @var PDU\Type
 	 */
 	protected $_type;
 	
 	/**
 	 * Originator or Destination Address
-	 * @var PDU_SCA
+	 * @var PDU\SCA
 	 */
 	protected $_address;
 	
@@ -55,7 +47,7 @@ abstract class PDU {
 	
 	/**
 	 * Data Coding Scheme
-	 * @var PDU_DCS
+	 * @var PDU\DCS
 	 */
 	protected $_dcs;
 	
@@ -103,7 +95,7 @@ abstract class PDU {
 	/**
 	 * parse pdu string
 	 * @param string $PDU
-	 * @return \PDU
+	 * @return PDU
 	 * @throws Exception
 	 */
 	public static function parse($PDU)
@@ -112,21 +104,21 @@ abstract class PDU {
 		self::$_pduParse = $PDU;
 		
 		// parse service center address
-		$sca = PDU_SCA::parse(FALSE);
+		$sca = PDU\SCA::parse(FALSE);
 		
 		// parse type of sms
-		$type = PDU_Type::parse();
+		$type = PDU\Type::parse();
 		
 		switch($type->getMti()){
-			case PDU_Type::SMS_DELIVER:
+			case PDU\Type::SMS_DELIVER:
 				$self = new Deliver();
 				break;
 		
-			case PDU_Type::SMS_SUBMIT:
+			case PDU\Type::SMS_SUBMIT:
 				$self = new Submit();
 				break;
 			
-			case PDU_Type::SMS_REPORT:
+			case PDU\Type::SMS_REPORT:
 				$self = new Report();
 				break;
 			
@@ -140,27 +132,27 @@ abstract class PDU {
 		$self->_type = $type;
 		
 		// if this is submit type
-		if($self->_type instanceof PDU_Type_Submit){
+		if($self->_type instanceof PDU\Type\Submit){
 			// get mr
 			$self->_mr = hexdec(PDU::getPduSubstr(2));
 		}
 		
 		// if this is submit type
-		if($self->_type instanceof PDU_Type_Report){
+		if($self->_type instanceof PDU\Type\Report){
 			// get reference
 			$self->_reference = hexdec(PDU::getPduSubstr(2));
 		}
 		
 		// parse sms address
-		$self->_address = PDU_SCA::parse();
+		$self->_address = PDU\SCA::parse();
 		
 		// if is the report status
-		if($self->_type instanceof PDU_Type_Report){
+		if($self->_type instanceof PDU\Type\Report){
 			// parse timestamp
-			$self->_timestamp = PDU_SCTS::parse();
+			$self->_timestamp = PDU\SCTS::parse();
 			
 			// parse discharge
-			$self->_discharge = PDU_SCTS::parse();
+			$self->_discharge = PDU\SCTS::parse();
 			
 			// get status
 			$self->_status = hexdec(PDU::getPduSubstr(2));
@@ -169,22 +161,22 @@ abstract class PDU {
 			$self->_pid = hexdec(PDU::getPduSubstr(2));
 
 			// parse dcs
-			$self->_dcs = PDU_DCS::parse();
+			$self->_dcs = PDU\DCS::parse();
 
 			// if this submit sms
-			if($self->_type instanceof PDU_Type_Submit){
+			if($self->_type instanceof PDU\Type\Submit){
 				// parse vp
-				$self->_vp = PDU_VP::parse($self);
+				$self->_vp = PDU\VP::parse($self);
 			} else {
 				// parse scts
-				$self->_scts = PDU_SCTS::parse();
+				$self->_scts = PDU\SCTS::parse();
 			}
 
 			// get data length
 			$self->_udl = hexdec(PDU::getPduSubstr(2));
 
 			// parse data
-			$self->_ud = PDU_Data::parse($self);
+			$self->_ud = PDU\Data::parse($self);
 		}
 		
 		return $self;
@@ -202,12 +194,12 @@ abstract class PDU {
 	/**
 	 * set sms center
 	 * @param string|null $number
-	 * @return \PDU
+	 * @return PDU
 	 */
 	public function setSca($number = NULL)
 	{
 		if( ! $this->_sca){
-			$this->_sca = new PDU_SCA(FALSE);
+			$this->_sca = new PDU\SCA(FALSE);
 		}
 		
 		if($number){
@@ -219,7 +211,7 @@ abstract class PDU {
 	
 	/**
 	 * getter for SCA
-	 * @return PDU_SCA
+	 * @return PDU\SCA
 	 */
 	public function getSca()
 	{
@@ -229,13 +221,13 @@ abstract class PDU {
 	/**
 	 * set pdu type
 	 * @param array $params
-	 * @return \PDU
+	 * @return PDU
 	 */
 	abstract public function setType(array $params = array());
 	
 	/**
 	 * get pdu type
-	 * @return PDU_Type
+	 * @return PDU\Type
 	 */
 	public function getType()
 	{
@@ -245,18 +237,18 @@ abstract class PDU {
 	/**
 	 * set address
 	 * @param string $number
-	 * @return \PDU
+	 * @return PDU
 	 */
 	public function setAddress($number)
 	{
-		$this->_address = new PDU_SCA();
+		$this->_address = new PDU\SCA();
 		$this->_address->setPhone($number);
 		return $this;
 	}
 	
 	/**
 	 * getter address
-	 * @return PDU_SCA
+	 * @return PDU\SCA
 	 */
 	public function getAddress()
 	{
@@ -265,17 +257,17 @@ abstract class PDU {
 	
 	/**
 	 * set Data Coding Scheme
-	 * @return \PDU
+	 * @return PDU
 	 */
 	public function setDcs()
 	{
-		$this->_dcs = new PDU_DCS();
+		$this->_dcs = new PDU\DCS();
 		return $this;
 	}
 	
 	/**
 	 * getter for dcs
-	 * @return PDU_DCS
+	 * @return PDU\DCS
 	 */
 	public function getDcs()
 	{
@@ -285,18 +277,18 @@ abstract class PDU {
 	/**
 	 * set data
 	 * @param string $data
-	 * @return \PDU
+	 * @return PDU
 	 */
 	public function setData($data)
 	{
-		$this->_ud = new PDU_Data($this);
+		$this->_ud = new PDU\Data($this);
 		$this->_ud->setData($data);
 		return $this;
 	}
 	
 	/**
 	 * getter user data
-	 * @return PDU_Data
+	 * @return PDU\Data
 	 */
 	public function getData()
 	{
@@ -306,7 +298,7 @@ abstract class PDU {
 	/**
 	 * set pid
 	 * @param integer $pid
-	 * @return \PDU
+	 * @return PDU
 	 */
 	public function setPid($pid)
 	{

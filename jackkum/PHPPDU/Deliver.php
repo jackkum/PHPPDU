@@ -17,76 +17,64 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'PDU.php';
-require_once 'PDU/VP.php';
-require_once 'PDU/Type/Submit.php';
+namespace jackkum\PHPPDU;
 
-class Submit extends PDU {
+class Deliver extends PDU {
 	
 	/**
-	 * Message Reference
-	 * not changed for submit message
-	 * @var integer
+	 * 
+	 * @var PDU\SCTS
 	 */
-	protected $_mr = 0x00;
+	protected $_scts;
 	
 	/**
-	 * Validity Period
-	 * @var PDU_VP
+	 * create deliver
 	 */
-	protected $_vp;
-	
-	public function __construct()
+	public function __construct() 
 	{
 		parent::__construct();
 		
-		$this->setVp();
+		$this->setScts();
 	}
 	
 	/**
-	 * set validity period
-	 * @param string|int $value
-	 * @return \Submit
+	 * set scts
+	 * @param string|null $time
+	 * @return \Deliver
 	 */
-	public function setVp($value = NULL)
+	public function setScts($time = NULL)
 	{
-		$this->_vp = new PDU_VP($this);
-		
-		if(is_string($value)){
-			$this->_vp->setDateTime($value);
-		} else {
-			$this->_vp->setInterval($value);
-		}
-		
+		$this->_scts = new PDU\SCTS(is_null($time) ? $this->_getDateTime() : $time);
 		return $this;
 	}
 	
 	/**
-	 * getter validity period
-	 * @return PDU_VP
+	 * getter for scts
+	 * @return PDU\SCTS
 	 */
-	public function getVp()
+	public function getScts()
 	{
-		return $this->_vp;
+		return $this->_scts;
 	}
 	
 	/**
-	 * getter message reference
-	 * @return integer
+	 * get default datetime
+	 * @return string
 	 */
-	public function getMr()
+	protected function _getDateTime()
 	{
-		return $this->_mr;
+		// 10 days
+		return date('Y-m-d H:i:s', time() + (3600*24*10));
 	}
 	
 	/**
 	 * set pdu type
 	 * @param array $params
-	 * @return \Submit
+	 * @return \Deliver
 	 */
 	public function setType(array $params = array())
 	{
-		$this->_type = new PDU_Type_Submit($params);
+		$this->_type = new PDU\Type\Deliver($params);
 		return $this;
 	}
 	
@@ -98,11 +86,10 @@ class Submit extends PDU {
 	{
 		$PDU  = (string) $this->getSca();
 		$PDU .= (string) $this->getType();
-		$PDU .= sprintf("%02X", $this->getMr());
 		$PDU .= (string) $this->getAddress();
 		$PDU .= sprintf("%02X", $this->getPid());
 		$PDU .= (string) $this->getDcs();
-		$PDU .= (string) $this->getVp();
+		$PDU .= (string) $this->getScts();
 		
 		return $PDU;
 	}

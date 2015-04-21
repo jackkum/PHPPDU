@@ -17,7 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class PDU_SCTS {
+namespace jackkum\PHPPDU\PDU;
+
+use jackkum\PHPPDU\PDU;
+
+class SCTS {
 	
 	/**
 	 * unix time
@@ -76,12 +80,12 @@ class PDU_SCTS {
 	public function __toString() 
 	{
 		return implode(
-			"",								// join result string
+			"",	
 			array_map(
-				'strrev',					// reverse parts
-				str_split(					// split datetime
-					$this->_getDateTime(),	// get datetime `ymdHis`
-					2						// 2 letters
+				'strrev',
+				str_split(
+					$this->_getDateTime(),
+					2
 				)
 			)
 		);

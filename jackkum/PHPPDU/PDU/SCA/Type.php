@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-class PDU_SCA_Type {
+namespace jackkum\PHPPDU\PDU\SCA;
+
+class Type {
 	
 	const TYPE_UNKNOWN           = 0x00;
 	const TYPE_INTERNATIONAL     = 0x01;

@@ -17,13 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'PDU/Data/Header.php';
+namespace jackkum\PHPPDU\PDU\Data;
 
-class PDU_Data_Part {
+use jackkum\PHPPDU\PDU;
+use jackkum\PHPPDU\PDU\Data;
+
+class Part {
 	
 	/**
 	 * header message
-	 * @var PDU_Data_Header
+	 * @var \Header
 	 */
 	protected $_header;
 	
@@ -41,7 +44,7 @@ class PDU_Data_Part {
 	
 	/**
 	 * pdu data
-	 * @var PDU_Data
+	 * @var \Data
 	 */
 	protected $_parent;
 	
@@ -50,7 +53,7 @@ class PDU_Data_Part {
 	 * @param string $data
 	 * @param array|NULL $header
 	 */
-	public function __construct(PDU_Data $parent, $data, $size, $header = NULL)
+	public function __construct(Data $parent, $data, $size, $header = NULL)
 	{
 		// parent 
 		$this->_parent = $parent;
@@ -64,42 +67,42 @@ class PDU_Data_Part {
 		// have params for header
 		if(is_array($header)){
 			// create header
-			$this->_header = new PDU_Data_Header($header);
+			$this->_header = new Header($header);
 		}
 	}
 	
 	/**
 	 * parse pdu string
-	 * @param PDU_Data $data
+	 * @param \Data $data
 	 * @return array [decded text, text size, self object]
 	 * @throws Exception
 	 */
-	public static function parse(PDU_Data $data)
+	public static function parse(Data $data)
 	{
 		$alphabet = $data->getPdu()->getDcs()->getTextAlphabet();
 		$header   = NULL;
-		$length   = $data->getPdu()->getUdl() * ($alphabet == PDU_DCS::ALPHABET_UCS2 ? 4 : 2);
+		$length   = $data->getPdu()->getUdl() * ($alphabet == PDU\DCS::ALPHABET_UCS2 ? 4 : 2);
 		
 		if($data->getPdu()->getType()->getUdhi()){
-			$header = PDU_Data_Header::parse();
+			$header = Header::parse();
 		}
 		
 		$hex = PDU::getPduSubstr($length);
 		
 		switch($alphabet){
-			case PDU_DCS::ALPHABET_DEFAULT:
-				PDU::debug("PDU_Helper::decode7bit()");
-				$text = PDU_Helper::decode7bit($hex);
+			case PDU\DCS::ALPHABET_DEFAULT:
+				PDU::debug("Helper::decode7bit()");
+				$text = PDU\Helper::decode7bit($hex);
 				break;
 			
-			case PDU_DCS::ALPHABET_8BIT:
-				PDU::debug("PDU_Helper::decode8bit()");
-				$text = PDU_Helper::decode8bit($hex);
+			case PDU\DCS::ALPHABET_8BIT:
+				PDU::debug("Helper::decode8bit()");
+				$text = PDU\Helper::decode8bit($hex);
 				break;
 			
-			case PDU_DCS::ALPHABET_UCS2:
-				PDU::debug("PDU_Helper::decode16Bit()");
-				$text = PDU_Helper::decode16Bit($hex);
+			case PDU\DCS::ALPHABET_UCS2:
+				PDU::debug("Helper::decode16Bit()");
+				$text = PDU\Helper::decode16Bit($hex);
 				break;
 			
 			default:
@@ -133,7 +136,7 @@ class PDU_Data_Part {
 	
 	/**
 	 * getter header
-	 * @return PDU_Data_Header
+	 * @return Header
 	 */
 	public function getHeader()
 	{
@@ -142,7 +145,7 @@ class PDU_Data_Part {
 	
 	/**
 	 * getter parent of part
-	 * @return PDU_Data
+	 * @return \Data
 	 */
 	public function getParent()
 	{

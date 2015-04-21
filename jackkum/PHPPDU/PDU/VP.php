@@ -17,9 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once 'PDU/SCTS.php';
+namespace jackkum\PHPPDU\PDU;
 
-class PDU_VP {
+use jackkum\PHPPDU\PDU;
+use jackkum\PHPPDU\Submit;
+
+class VP {
 	
 	/**
 	 * date time validity period
@@ -43,7 +46,7 @@ class PDU_VP {
 	 * create object
 	 * @param PDU $pdu
 	 */
-	public function __construct(PDU $pdu)
+	public function __construct(Submit $pdu)
 	{
 		$this->_pdu = $pdu;
 	}
@@ -54,15 +57,15 @@ class PDU_VP {
 	 * @return \self
 	 * @throws Exception
 	 */
-	public static function parse(PDU $pdu)
+	public static function parse(Submit $pdu)
 	{
 		$vp = new self($pdu);
 		
 		switch($pdu->getType()->getVpf()){
-			case PDU_Type::VPF_NONE:     return $vp;
-			case PDU_Type::VPF_ABSOLUTE: return PDU_SCTS::parse();
+			case Type::VPF_NONE:     return $vp;
+			case Type::VPF_ABSOLUTE: return SCTS::parse();
 			
-			case PDU_Type::VPF_RELATIVE:
+			case Type::VPF_RELATIVE:
 				
 				$byte = hexdec(PDU::getPduSubstr(2));
 				
@@ -122,13 +125,13 @@ class PDU_VP {
 		
 		// absolute value
 		if($this->_datetime){
-			$type->setVpf(PDU_Type::VPF_ABSOLUTE);
-			return (string) (new PDU_SCTS($this->_datetime));
+			$type->setVpf(Type::VPF_ABSOLUTE);
+			return (string) (new SCTS($this->_datetime));
 		}
 		
 		// relative value in seconds
 		if($this->_interval){
-			$type->setVpf(PDU_Type::VPF_RELATIVE);
+			$type->setVpf(Type::VPF_RELATIVE);
 			
 			$minutes = ceil($this->_interval / 60);
 			$hours   = ceil($this->_interval / 60 / 60);
@@ -147,7 +150,7 @@ class PDU_VP {
 		}
 		
 		// vpf not used
-		$type->setVpf(PDU_Type::VPF_NONE);
+		$type->setVpf(Type::VPF_NONE);
 		
 		return "";
 	}
