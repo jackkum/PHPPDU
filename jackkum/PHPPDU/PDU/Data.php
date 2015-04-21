@@ -19,6 +19,8 @@
 
 namespace jackkum\PHPPDU\PDU;
 
+use jackkum\PHPPDU\PDU;
+
 class Data {
 	
 	const HEADER_SIZE = 8;
@@ -57,7 +59,7 @@ class Data {
 	 * create object data
 	 * @param PDU $pdu
 	 */
-	public function __construct(\jackkum\PHPPDU\PDU $pdu)
+	public function __construct(PDU $pdu)
 	{
 		// set encoding
 		mb_internal_encoding('utf-8');
@@ -70,7 +72,7 @@ class Data {
 	 * @param PDU $pdu
 	 * @return \self
 	 */
-	public static function parse(\jackkum\PHPPDU\PDU $pdu)
+	public static function parse(PDU $pdu)
 	{
 		$self = new Data($pdu);
 		
@@ -171,17 +173,17 @@ class Data {
 			switch($this->getPdu()->getDcs()->getTextAlphabet()){
 				
 				case DCS::ALPHABET_DEFAULT:
-					\jackkum\PHPPDU\PDU::debug("Helper::encode7bit()");
+					PDU::debug("Helper::encode7bit()");
 					list($size,$part) = Helper::encode7bit($text);
 					break;
 				
 				case DCS::ALPHABET_8BIT:
-					\jackkum\PHPPDU\PDU::debug("Helper::encode8BitMessage()");
+					PDU::debug("Helper::encode8BitMessage()");
 					list($size,$part) = Helper::encode8Bit($text);
 					break;
 				
 				case DCS::ALPHABET_UCS2:
-					\jackkum\PHPPDU\PDU::debug("Helper::encode16BitMessage()");
+					PDU::debug("Helper::encode16BitMessage()");
 					list($size,$part) = Helper::encode16Bit($text);
 					break;
 				

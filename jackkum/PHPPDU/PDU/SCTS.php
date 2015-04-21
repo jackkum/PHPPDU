@@ -19,6 +19,8 @@
 
 namespace jackkum\PHPPDU\PDU;
 
+use jackkum\PHPPDU\PDU;
+
 class SCTS {
 	
 	/**

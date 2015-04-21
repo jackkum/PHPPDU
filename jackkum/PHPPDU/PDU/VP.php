@@ -19,6 +19,9 @@
 
 namespace jackkum\PHPPDU\PDU;
 
+use jackkum\PHPPDU\PDU;
+use jackkum\PHPPDU\Submit;
+
 class VP {
 	
 	/**
@@ -43,7 +46,7 @@ class VP {
 	 * create object
 	 * @param PDU $pdu
 	 */
-	public function __construct(\jackkum\PHPPDU\Submit $pdu)
+	public function __construct(Submit $pdu)
 	{
 		$this->_pdu = $pdu;
 	}
@@ -54,7 +57,7 @@ class VP {
 	 * @return \self
 	 * @throws Exception
 	 */
-	public static function parse(\jackkum\PHPPDU\Submit $pdu)
+	public static function parse(Submit $pdu)
 	{
 		$vp = new self($pdu);
 		
@@ -64,7 +67,7 @@ class VP {
 			
 			case Type::VPF_RELATIVE:
 				
-				$byte = hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2));
+				$byte = hexdec(PDU::getPduSubstr(2));
 				
 				if($byte <= 143){
 					$vp->_interval = ($byte+1) * (5*60);

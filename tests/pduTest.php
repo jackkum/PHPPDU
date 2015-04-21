@@ -53,9 +53,20 @@ class PduTest extends PHPUnit_Framework_TestCase
 			'0061000B919720459403F700006306080458F3030320F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCFA076793E0F9FCB2E970B'
 		);
 		
-		foreach($lines as $line){
+		foreach($lines as $i => $line){
 			$pdu = \jackkum\PHPPDU\PDU::parse($line);
+			
+			// check instance
 			$this->assertTrue($pdu instanceof jackkum\PHPPDU\Submit);
+			// check phone mumber
+			$this->assertTrue($pdu->getAddress()->getPhone() == '79025449307');
+			
+			$part = array_shift($pdu->getParts());
+			// check current part of pdu
+			$this->assertNotNull($part);
+			// check number of part
+			$this->assertTrue($part->getHeader()->getCurrent() == ($i+1));
+			
 		}
 	}
 }

@@ -19,6 +19,8 @@
 
 namespace jackkum\PHPPDU\PDU;
 
+use jackkum\PHPPDU\PDU;
+
 abstract class Type {
 	
 	const SMS_SUBMIT   = 0x01;
@@ -74,7 +76,7 @@ abstract class Type {
 	 */
 	public static function parse()
 	{
-		$byte = hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2));
+		$byte = hexdec(PDU::getPduSubstr(2));
 		$type = NULL;
 		
 		switch((3&$byte)){

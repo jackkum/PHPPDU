@@ -19,6 +19,8 @@
 
 namespace jackkum\PHPPDU\PDU;
 
+use jackkum\PHPPDU\PDU;
+
 class DCS {
 	
 	/**
@@ -119,7 +121,7 @@ class DCS {
 	public static function parse()
 	{
 		$DCS  = new self();
-		$byte = hexdec(\jackkum\PHPPDU\PDU::getPduSubstr(2));
+		$byte = hexdec(PDU::getPduSubstr(2));
 		
 		$DCS->_encodeGroup  = 0x0F&($byte>>4);
 		$DCS->_dataEncoding = 0x0F&$byte;
