@@ -1,4 +1,4 @@
-PHPPDU [![Build Status](https://travis-ci.org/jackkum/PHPPDU.svg)](https://travis-ci.org/jackkum/PHPPDU)
+# PHPPDU [![Build Status](https://travis-ci.org/jackkum/PHPPDU.svg)](https://travis-ci.org/jackkum/PHPPDU)
 
 Creating a PDU string for sending sms
 
