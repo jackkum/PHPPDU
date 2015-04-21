@@ -6,9 +6,11 @@ Creating a PDU string for sending sms
 ----------------------
 
 ```
-require_once 'PDU.php';
+require_once './jackkum/PHPPDU/Autoloader.php';
 
-$pdu = new Submit();
+\jackkum\PHPPDU\Autoloader::register();
+
+$pdu = new \jackkum\PHPPDU\Submit();
 
 $pdu->setAddress("*********");
 $pdu->setData("Message to sent.");
@@ -21,7 +23,7 @@ foreach($pdu->getParts() as $part){
 ----------------------
 
 ```
-$pdu = PDU::parse($str);
+$pdu = \jackkum\PHPPDU\PDU::parse($str);
 
 echo $pdu->getAddress()->getPhone(), PHP_EOL;
 
@@ -37,4 +39,3 @@ foreach($pdu->getParts() as $part){
 
 # TODO
  - Merge parsed messages
- - Report status pdu type
