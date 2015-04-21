@@ -60,8 +60,10 @@ class PduTest extends PHPUnit_Framework_TestCase
 			$this->assertTrue($pdu instanceof jackkum\PHPPDU\Submit);
 			// check phone mumber
 			$this->assertTrue($pdu->getAddress()->getPhone() == '79025449307');
-			
-			$part = array_shift($pdu->getParts());
+			// get parts
+			$parts = $pdu->getParts();
+			// first part
+			$part  = array_shift($parts);
 			// check current part of pdu
 			$this->assertNotNull($part);
 			// check number of part
