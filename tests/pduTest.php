@@ -19,14 +19,27 @@
 
 require_once './jackkum/PHPPDU/Autoloader.php';
 
+use jackkum\PHPPDU\PDU;
+use jackkum\PHPPDU\Submit;
+use jackkum\PHPPDU\Report;
+use jackkum\PHPPDU\Deliver;
+use jackkum\PHPPDU\Autoloader;
+
 class PduTest extends PHPUnit_Framework_TestCase
 {
-    public function testSubmitCreate()
+	protected static $lines = array(
+			'0061000B919720459403F700008C06080458F30301ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FB0D',
+			'0061000B919720459403F700008C06080458F30302EE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C',
+			'0061000B919720459403F700006306080458F3030320F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCFA076793E0F9FCB2E970B'
+		);
+
+
+	public function testSubmitCreate()
     {
 		
-		\jackkum\PHPPDU\Autoloader::register();
+		Autoloader::register();
 
-		$pdu = new \jackkum\PHPPDU\Submit();
+		$pdu = new Submit();
 
 		
 		$pdu->setAddress("79025449307");
@@ -39,36 +52,56 @@ class PduTest extends PHPUnit_Framework_TestCase
 		. "long long long long long long long long long long "
 		. "long long message...");
 
-		foreach($pdu->getParts() as $part){
-			$this->assertTrue($part instanceof jackkum\PHPPDU\PDU\Data\Part);
+		$parts = $pdu->getParts();
+		$this->assertNotNull($parts);
+		$this->assertCount(3, $parts);
+		
+		foreach($parts as $index => $part){
+			$this->assertTrue($part instanceof PDU\Data\Part);
 		}
+		
+		$this->assertTrue($pdu->getAddress()->getPhone() == '79025449307');
 		
     }
 	
 	public function testSubmitParse()
 	{
-		$lines = array(
-			'0061000B919720459403F700008C06080458F30301ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FB0D',
-			'0061000B919720459403F700008C06080458F30302EE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C',
-			'0061000B919720459403F700006306080458F3030320F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCFA076793E0F9FCB2E970B'
-		);
-		
-		foreach($lines as $i => $line){
-			$pdu = \jackkum\PHPPDU\PDU::parse($line);
+		foreach(self::$lines as $i => $line){
+			$pdu = PDU::parse($line);
 			
 			// check instance
-			$this->assertTrue($pdu instanceof jackkum\PHPPDU\Submit);
+			$this->assertTrue($pdu instanceof Submit);
 			// check phone mumber
 			$this->assertTrue($pdu->getAddress()->getPhone() == '79025449307');
 			// get parts
 			$parts = $pdu->getParts();
+			// check parts
+			$this->assertNotNull($parts);
 			// first part
 			$part  = array_shift($parts);
 			// check current part of pdu
 			$this->assertNotNull($part);
 			// check number of part
 			$this->assertTrue($part->getHeader()->getCurrent() == ($i+1));
-			
 		}
 	}
+	
+	public function testReportParse()
+	{
+		$pdu = PDU::parse('0006D60B911326880736F4111011719551401110117195714000');
+		
+		$this->assertTrue($pdu instanceof Report);
+		$this->assertTrue('31628870634' == $pdu->getAddress()->getPhone());
+		$this->assertTrue(0             == $pdu->getStatus());
+	}
+	
+	public function testDeliverParse()
+	{
+		$pdu = PDU::parse('0791448720003023240DD0E474D81C0EBB010000111011315214000BE474D81C0EBB5DE3771B');
+		
+		$this->assertTrue($pdu instanceof Deliver);
+		$this->assertTrue('diafaan'     == $pdu->getAddress()->getPhone());
+		$this->assertTrue('diafaan.com' == $pdu->getData()->getData());
+	}
+	
 }
