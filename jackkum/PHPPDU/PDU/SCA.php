@@ -43,6 +43,13 @@ class SCA {
 	protected $_phone  = NULL;
 	
 	/**
+	 * recipient encoded
+	 * @var type 
+	 */
+	protected $_encoded = NULL;
+
+
+	/**
 	 * how claclulate size (octets or digits)
 	 * OA and DA size is on digits
 	 * @var boolean
@@ -88,22 +95,25 @@ class SCA {
 			$hex = PDU::getPduSubstr($size);
 			
 			switch($SCA->getType()->getType()){
-				case SCA\Type::TYPE_UNKNOWN:
+				case SCA\Type::TYPE_UNKNOWN: 
 				case SCA\Type::TYPE_INTERNATIONAL:
 				case SCA\Type::TYPE_ACCEPTER_INTO_NET:
 				case SCA\Type::TYPE_SUBSCRIBER_NET:
 				case SCA\Type::TYPE_TRIMMED:
 					
 					$SCA->setPhone(
-						implode(
-							"",
-							array_map(
-								'strrev', 
+						rtrim(
+							implode(
+								"",
 								array_map(
-									array('self', '_map_filter_decode'),
-									str_split($hex, 2)
+									'strrev', 
+									array_map(
+										array('self', '_map_filter_decode'),
+										str_split($hex, 2)
+									)
 								)
-							)
+							),
+							'F'
 						)
 					);
 					
@@ -139,22 +149,28 @@ class SCA {
 	 */
 	public function setPhone($phone)
 	{
-		$this->_phone = implode(
-			"",
-			array_map(                               // join filtered phone letters
-				array('self', '_map_filter_encode'), // encode filter
-				str_split(                           // split string
-					preg_replace(                    // replace wrong letters
-						'/([^a-c0-9\*\#]*)/', 
-						NULL, 
-						$phone
+		$this->_phone   = $phone;
+		
+		if($this->getType()->getType() == SCA\Type::TYPE_ALPHANUMERICAL){
+			list($this->size, $this->_encoded) = PDU\Helper::encode7bit($phone);
+		} else {
+			$this->_encoded = implode(
+				"",
+				array_map(                               // join filtered phone letters
+					array('self', '_map_filter_encode'), // encode filter
+					str_split(                           // split string
+						preg_replace(                    // replace wrong letters
+							'/([^a-c0-9\*\#]*)/', 
+							NULL, 
+							$phone
+						)
 					)
 				)
-			)
-		);
-		
-		// get size
-		$this->_size = strlen($this->_phone);
+			);
+			
+			// get size
+			$this->_size = strlen($this->_encoded);
+		}
 		
 	}
 	
@@ -206,16 +222,18 @@ class SCA {
 			
 			$PDU .= $this->getType();
 
-			// reverse octets
-			for($i = 0; $i < $this->getSize(); $i += 2){
-				$b1 = substr($this->getPhone(), $i, 1);
-				$b2 = substr($this->getPhone(), $i+1, 1);
+			if($this->getType()->getType() != SCA\Type::TYPE_ALPHANUMERICAL){
+				// reverse octets
+				for($i = 0; $i < $this->getSize(); $i += 2){
+					$b1 = substr($this->_encoded, $i, 1);
+					$b2 = substr($this->_encoded, $i+1, 1);
 
-				if($b2 === FALSE){
-					$b2 = 'F';
+					if($b2 === FALSE){
+						$b2 = 'F';
+					}
+					// add to pdu
+					$PDU .= $b2 . $b1;
 				}
-				// add to pdu
-				$PDU .= $b2 . $b1;
 			}
 		}
 		
