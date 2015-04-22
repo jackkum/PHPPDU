@@ -39,9 +39,15 @@ class PduTest extends PHPUnit_Framework_TestCase
 		. "long long long long long long long long long long "
 		. "long long message...");
 
-		foreach($pdu->getParts() as $part){
+		$parts = $pdu->getParts();
+		$this->assertNotNull($parts);
+		$this->assertCount(3, $parts);
+		
+		foreach($parts as $part){
 			$this->assertTrue($part instanceof jackkum\PHPPDU\PDU\Data\Part);
 		}
+		
+		$this->assertTrue($pdu->getAddress()->getPhone() == '79025449307');
 		
     }
 	
@@ -62,13 +68,34 @@ class PduTest extends PHPUnit_Framework_TestCase
 			$this->assertTrue($pdu->getAddress()->getPhone() == '79025449307');
 			// get parts
 			$parts = $pdu->getParts();
+			// check parts
+			$this->assertNotNull($parts);
 			// first part
 			$part  = array_shift($parts);
 			// check current part of pdu
 			$this->assertNotNull($part);
 			// check number of part
 			$this->assertTrue($part->getHeader()->getCurrent() == ($i+1));
-			
 		}
 	}
+	
+	public function testReportParse()
+	{
+		$pdu = \jackkum\PHPPDU\PDU::parse('0006D60B911326880736F4111011719551401110117195714000');
+		
+		$this->assertTrue($pdu instanceof jackkum\PHPPDU\Report);
+		$this->assertTrue('31628870634' == $pdu->getAddress()->getPhone());
+		$this->assertTrue(1294739955    == $pdu->getDateTime()->getTime());
+		$this->assertTrue(0             == $pdu->getStatus());
+	}
+	
+	public function testDeliverParse()
+	{
+		$pdu = \jackkum\PHPPDU\PDU::parse('0791448720003023240DD0E474D81C0EBB010000111011315214000BE474D81C0EBB5DE3771B');
+		
+		$this->assertTrue($pdu instanceof jackkum\PHPPDU\Deliver);
+		$this->assertTrue('diafaan'     == $pdu->getAddress()->getPhone());
+		$this->assertTrue('diafaan.com' == $pdu->getData()->getData());
+	}
+	
 }
