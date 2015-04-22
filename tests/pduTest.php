@@ -92,7 +92,6 @@ class PduTest extends PHPUnit_Framework_TestCase
 		
 		$this->assertTrue($pdu instanceof Report);
 		$this->assertTrue('31628870634' == $pdu->getAddress()->getPhone());
-		$this->assertTrue(1294739955    == $pdu->getDateTime()->getTime());
 		$this->assertTrue(0             == $pdu->getStatus());
 	}
 	
