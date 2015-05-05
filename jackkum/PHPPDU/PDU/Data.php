@@ -87,6 +87,67 @@ class Data {
 	}
 	
 	/**
+	 * merge parts
+	 * @param PDU $pdu
+	 */
+	public function append(PDU $pdu)
+	{
+		$parts = $pdu->getParts();
+		
+		foreach($parts as $part){
+			
+			if( ! $this->_partExists($part)){
+				$this->_parts[] = $part;
+			}
+		}
+		
+		$this->_sortParts();
+	}
+	
+	/**
+	 * check exists new part
+	 * @param Data\Part $part
+	 * @throws Exception if not equals pointers
+	 * @return boolean
+	 */
+	protected function _partExists(Data\Part $part)
+	{
+		foreach($this->_parts as $_part){
+			
+			if($part->getHeader()->getPointer() != $_part->getHeader()->getPointer()){
+				throw new Exception("Part from different message");
+			}
+			
+			if($_part->getHeader()->getCurrent() == $part->getHeader()->getCurrent()){
+				return TRUE;
+			}
+		}
+		
+		return FALSE;
+	}
+
+	/**
+	 * sorting parts
+	 */
+	protected function _sortParts()
+	{
+		usort($this->_parts, function(Data\Part $part1, Data\Part $part2){
+			$index1 = $part1->getHeader()->getCurrent();
+			$index2 = $part2->getHeader()->getCurrent();
+			
+			return $index1 > $index2 ? 1 : -1;
+		});
+		
+		$message = NULL;
+		
+		foreach($this->_parts as $part){
+			$message .= $part->getText();
+		}
+		
+		$this->_data = $message;
+	}
+
+	/**
 	 * set text message
 	 * @param string $data
 	 */
@@ -135,7 +196,7 @@ class Data {
 		if($this->_isUnicode){
 			// max length sms to unicode
 			$max = 70;
-			// cant compress message
+			// can't compress message
 			$this->getPdu()
 				 ->getDcs()
 				 ->setTextCompressed(FALSE)					// no compress
@@ -157,7 +218,7 @@ class Data {
 		}
 		
 		foreach($parts as $index => $text){
-			
+			var_dump($text);
 			$params = 
 			($header ? 
 				array(
@@ -190,7 +251,7 @@ class Data {
 				default:
 					throw new Exception("Unknown alphabet");
 			}
-			
+			echo "# " . $part . "\n";
 			if($header){
 				$size += self::HEADER_SIZE;
 			}
