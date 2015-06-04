@@ -218,7 +218,6 @@ class Data {
 		}
 		
 		foreach($parts as $index => $text){
-			var_dump($text);
 			$params = 
 			($header ? 
 				array(
@@ -251,7 +250,7 @@ class Data {
 				default:
 					throw new Exception("Unknown alphabet");
 			}
-			echo "# " . $part . "\n";
+
 			if($header){
 				$size += self::HEADER_SIZE;
 			}
