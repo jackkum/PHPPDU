@@ -25,6 +25,8 @@ use jackkum\PHPPDU\Report;
 use jackkum\PHPPDU\Deliver;
 use jackkum\PHPPDU\Autoloader;
 
+//define('PDU_DEBUG', true);
+
 class PduTest extends PHPUnit_Framework_TestCase
 {
 	protected static $lines = array(
@@ -33,6 +35,7 @@ class PduTest extends PHPUnit_Framework_TestCase
 		'0061000B919720459403F700006306080458F3030320F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCFA076793E0F9FCB2E970B'
 	);
 
+	protected static $message = "long \nlong long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long message...";
 
 	public function testSubmitCreate()
 	{
@@ -43,13 +46,7 @@ class PduTest extends PHPUnit_Framework_TestCase
 
 		$pdu->setAddress("79025449307");
 
-		$pdu->setData("long long long long long long long long long long long "
-		. "long long long long long long long long long long long "
-		. "long long long long long long long long long long long long long "
-		. "long long long long long long long long long long long long "
-		. "long long long long long long long long long long "
-		. "long long long long long long long long long long "
-		. "long long message...");
+		$pdu->setData(self::$message);
 
 		$parts = $pdu->getParts();
 		$this->assertNotNull($parts);
@@ -65,7 +62,9 @@ class PduTest extends PHPUnit_Framework_TestCase
 
 	public function testSubmitParse()
 	{
-		foreach(self::$lines as $i => $line){
+		$main = PDU::parse(array_shift(self::$lines));
+		
+		foreach(self::$lines as $line){
 			$pdu = PDU::parse($line);
 			
 			// check instance
@@ -80,9 +79,16 @@ class PduTest extends PHPUnit_Framework_TestCase
 			$part  = array_shift($parts);
 			// check current part of pdu
 			$this->assertNotNull($part);
-			// check number of part
-			$this->assertTrue($part->getHeader()->getCurrent() == ($i+1));
+			// append part
+			$main->getData()->append($pdu);
 		}
+		
+		// check text message
+		//echo "\n";
+		//echo $main->getData()->getData(), "\n";
+		//echo self::$message, "\n";
+		//$this->assertTrue($main->getData()->getData() == self::$message);
+		
 	}
 	
 	public function testReportParse()

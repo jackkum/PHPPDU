@@ -37,6 +37,12 @@ class Part {
 	protected $_data;
 	
 	/**
+	 * text message
+	 * @var string
+	 */
+	protected $_text;
+	
+	/**
 	 * size this part
 	 * @var integer
 	 */
@@ -117,6 +123,8 @@ class Part {
 			($header ? $header->toArray() : NULL)
 		);
 		
+		$self->_text = $text;
+		
 		return array(
 			$text,
 			$size,
@@ -124,6 +132,15 @@ class Part {
 		);
 	}
 
+
+	/**
+	 * getter for text message
+	 * @return string
+	 */
+	public function getText()
+	{
+		return $this->_text;
+	}
 
 	/**
 	 * getter data
