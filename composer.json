@@ -1,4 +1,9 @@
 {
+	"autoload": {
+		"psr-4": {
+			"jackkum\\PHPPDU\\": "vendor/jackkum/PHPPDU/"
+		}
+	},
 	"name": "jackkum/phppdu",
 	"description": "Creating pdu string for sending sms.",
 	"type": "library",
