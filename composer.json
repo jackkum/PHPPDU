@@ -1,4 +1,7 @@
 {
+	"config": {
+        "vendor-dir": "jackkum"
+    },
     "name": "jackkum/phppdu",
     "description": "Creating pdu string for sending sms.",
     "type": "library",
