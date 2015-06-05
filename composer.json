@@ -1,4 +1,7 @@
 {
+	"autoload": {
+        "psr-0": { "": "jackkum/PHPPDU/" }
+    },
 	"config": {
         "vendor-dir": "jackkum"
     },
