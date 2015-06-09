@@ -15,7 +15,7 @@
 	],
 	"minimum-stability": "dev",
 	"autoload": {
-		"psr-4": {
+		"psr-0": {
 			"jackkum\\PHPPDU\\": "vendor/jackkum/PHPPDU/"
 		}
 	}
