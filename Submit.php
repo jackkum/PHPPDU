@@ -48,6 +48,11 @@ class Submit extends PDU {
 	 */
 	public function setVp($value = NULL)
 	{
+		if($value instanceof PDU\VP){
+			$this->_vp = $value;
+			return $this;
+		}
+		
 		$this->_vp = new PDU\VP($this);
 		
 		if(is_string($value)){
@@ -78,11 +83,20 @@ class Submit extends PDU {
 	}
 	
 	/**
+	 * setter message reference
+	 * @param integer $mr
+	 */
+	public function setMr($mr)
+	{
+		$this->_mr = $mr;
+	}
+	
+	/**
 	 * set pdu type
 	 * @param array $params
 	 * @return \Submit
 	 */
-	public function setType(array $params = array())
+	public function initType(array $params = array())
 	{
 		$this->_type = new PDU\Type\Submit($params);
 		return $this;

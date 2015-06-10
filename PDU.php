@@ -76,7 +76,7 @@ abstract class PDU {
 	public function __construct()
 	{
 		$this->setSca();
-		$this->setType();
+		$this->initType();
 		$this->setDcs();
 	}
 	
@@ -107,79 +107,15 @@ abstract class PDU {
 		$sca = PDU\SCA::parse(FALSE);
 		
 		// parse type of sms
-		$type = PDU\Type::parse();
-		
-		switch($type->getMti()){
-			case PDU\Type::SMS_DELIVER:
-				$self = new Deliver();
-				break;
-		
-			case PDU\Type::SMS_SUBMIT:
-				$self = new Submit();
-				break;
-			
-			case PDU\Type::SMS_REPORT:
-				$self = new Report();
-				break;
-			
-			default:
-				throw new Exception("Unknown sms type");
-		}
+		$self = PDU\Helper::getPduByType();
 		
 		// set sca
 		$self->_sca = $sca;
-		// set type
-		$self->_type = $type;
-		
-		// if this is submit type
-		if($self->_type instanceof PDU\Type\Submit){
-			// get mr
-			$self->_mr = hexdec(PDU::getPduSubstr(2));
-		}
-		
-		// if this is submit type
-		if($self->_type instanceof PDU\Type\Report){
-			// get reference
-			$self->_reference = hexdec(PDU::getPduSubstr(2));
-		}
 		
 		// parse sms address
 		$self->_address = PDU\SCA::parse();
 		
-		// if is the report status
-		if($self->_type instanceof PDU\Type\Report){
-			// parse timestamp
-			$self->_timestamp = PDU\SCTS::parse();
-			
-			// parse discharge
-			$self->_discharge = PDU\SCTS::parse();
-			
-			// get status
-			$self->_status = hexdec(PDU::getPduSubstr(2));
-		} else {
-			// get pid
-			$self->_pid = hexdec(PDU::getPduSubstr(2));
-
-			// parse dcs
-			$self->_dcs = PDU\DCS::parse();
-
-			// if this submit sms
-			if($self->_type instanceof PDU\Type\Submit){
-				// parse vp
-				$self->_vp = PDU\VP::parse($self);
-			} else {
-				// parse scts
-				$self->_scts = PDU\SCTS::parse();
-			}
-
-			// get data length
-			$self->_udl = hexdec(PDU::getPduSubstr(2));
-
-			// parse data
-			$self->_ud = PDU\Data::parse($self);
-		}
-		
-		return $self;
+		return PDU\Helper::initVars($self);
 	}
 
 	/**
@@ -189,6 +125,15 @@ abstract class PDU {
 	public function getUdl()
 	{
 		return $this->_udl;
+	}
+	
+	/**
+	 * setter for user data length
+	 * @param type $udl
+	 */
+	public function setUdl($udl)
+	{
+		$this->_udl = $udl;
 	}
 
 	/**
@@ -223,7 +168,7 @@ abstract class PDU {
 	 * @param array $params
 	 * @return PDU
 	 */
-	abstract public function setType(array $params = array());
+	abstract public function initType(array $params = array());
 	
 	/**
 	 * get pdu type
@@ -232,6 +177,15 @@ abstract class PDU {
 	public function getType()
 	{
 		return $this->_type;
+	}
+	
+	/**
+	 * setter for the type of pdu
+	 * @param PDU\Type $type
+	 */
+	public function setType($type)
+	{
+		$this->_type = $type;
 	}
 	
 	/**
@@ -259,9 +213,9 @@ abstract class PDU {
 	 * set Data Coding Scheme
 	 * @return PDU
 	 */
-	public function setDcs()
+	public function setDcs($dcs = NULL)
 	{
-		$this->_dcs = new PDU\DCS();
+		$this->_dcs = $dcs ? $dcs : new PDU\DCS();
 		return $this;
 	}
 	
@@ -276,13 +230,18 @@ abstract class PDU {
 	
 	/**
 	 * set data
-	 * @param string $data
+	 * @param string|PDU\Data $data
 	 * @return PDU
 	 */
 	public function setData($data)
 	{
-		$this->_ud = new PDU\Data($this);
-		$this->_ud->setData($data);
+		if($data instanceof PDU\Data){
+			$this->_ud = $data;
+		} else {
+			$this->_ud = new PDU\Data($this);
+			$this->_ud->setData($data);
+		}
+		
 		return $this;
 	}
 	

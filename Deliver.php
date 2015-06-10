@@ -39,12 +39,17 @@ class Deliver extends PDU {
 	
 	/**
 	 * set scts
-	 * @param string|null $time
+	 * @param string|null|PDU\SCTS $time
 	 * @return \Deliver
 	 */
 	public function setScts($time = NULL)
 	{
-		$this->_scts = new PDU\SCTS(is_null($time) ? $this->_getDateTime() : $time);
+		if($time instanceof PDU\SCTS){
+			$this->_scts = $time;
+		} else {
+			$this->_scts = new PDU\SCTS(is_null($time) ? $this->_getDateTime() : $time);
+		}
+		
 		return $this;
 	}
 	
@@ -72,7 +77,7 @@ class Deliver extends PDU {
 	 * @param array $params
 	 * @return \Deliver
 	 */
-	public function setType(array $params = array())
+	public function initType(array $params = array())
 	{
 		$this->_type = new PDU\Type\Deliver($params);
 		return $this;
