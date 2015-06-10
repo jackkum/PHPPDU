@@ -3,9 +3,9 @@
 	"description": "Creating pdu string for sending sms.",
 	"type": "library",
 	"require": {},
-    "require-dev": {
-        "phpunit/phpunit": "4.0.*"
-    },
+	"require-dev": {
+		"phpunit/phpunit": "4.0.*"
+	},
 	"license": "MIT",
 	"authors": [
 		{
@@ -13,7 +13,6 @@
 			"email": "jackkum@bk.ru"
 		}
 	],
-	"minimum-stability": "dev",
 	"autoload": {
 		"psr-4": {
 			"jackkum\\PHPPDU\\": "vendor/jackkum/PHPPDU/"
