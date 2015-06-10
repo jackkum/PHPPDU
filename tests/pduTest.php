@@ -17,13 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-require_once './jackkum/PHPPDU/Autoloader.php';
+require_once dirname(__FILE__).'/../vendor/autoload.php';
 
 use jackkum\PHPPDU\PDU;
 use jackkum\PHPPDU\Submit;
 use jackkum\PHPPDU\Report;
 use jackkum\PHPPDU\Deliver;
-use jackkum\PHPPDU\Autoloader;
 
 //define('PDU_DEBUG', true);
 
@@ -39,9 +38,6 @@ class PduTest extends PHPUnit_Framework_TestCase
 
 	public function testSubmitCreate()
 	{
-
-		Autoloader::register();
-
 		$pdu = new Submit();
 
 		$pdu->setAddress("79025449307");
