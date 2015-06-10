@@ -107,79 +107,15 @@ abstract class PDU {
 		$sca = PDU\SCA::parse(FALSE);
 		
 		// parse type of sms
-		$type = PDU\Type::parse();
-		
-		switch($type->getMti()){
-			case PDU\Type::SMS_DELIVER:
-				$self = new Deliver();
-				break;
-		
-			case PDU\Type::SMS_SUBMIT:
-				$self = new Submit();
-				break;
-			
-			case PDU\Type::SMS_REPORT:
-				$self = new Report();
-				break;
-			
-			default:
-				throw new Exception("Unknown sms type");
-		}
+		$self = PDU\Helper::getPduByType();
 		
 		// set sca
 		$self->_sca = $sca;
-		// set type
-		$self->_type = $type;
-		
-		// if this is submit type
-		if($self->_type instanceof PDU\Type\Submit){
-			// get mr
-			$self->_mr = hexdec(PDU::getPduSubstr(2));
-		}
-		
-		// if this is submit type
-		if($self->_type instanceof PDU\Type\Report){
-			// get reference
-			$self->_reference = hexdec(PDU::getPduSubstr(2));
-		}
 		
 		// parse sms address
 		$self->_address = PDU\SCA::parse();
 		
-		// if is the report status
-		if($self->_type instanceof PDU\Type\Report){
-			// parse timestamp
-			$self->_timestamp = PDU\SCTS::parse();
-			
-			// parse discharge
-			$self->_discharge = PDU\SCTS::parse();
-			
-			// get status
-			$self->_status = hexdec(PDU::getPduSubstr(2));
-		} else {
-			// get pid
-			$self->_pid = hexdec(PDU::getPduSubstr(2));
-
-			// parse dcs
-			$self->_dcs = PDU\DCS::parse();
-
-			// if this submit sms
-			if($self->_type instanceof PDU\Type\Submit){
-				// parse vp
-				$self->_vp = PDU\VP::parse($self);
-			} else {
-				// parse scts
-				$self->_scts = PDU\SCTS::parse();
-			}
-
-			// get data length
-			$self->_udl = hexdec(PDU::getPduSubstr(2));
-
-			// parse data
-			$self->_ud = PDU\Data::parse($self);
-		}
-		
-		return $self;
+		return PDU\Helper::initVars($self);
 	}
 
 	/**

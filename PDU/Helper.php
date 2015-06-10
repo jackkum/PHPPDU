@@ -221,4 +221,81 @@ class Helper {
 		
 		return array($length, $pdu);
 	}
+	
+	/**
+	 * get pdu object by type
+	 * @return Deliver|Submit|Report
+	 * @throws Exception
+	 */
+	public static function getPduByType()
+	{
+		// parse type of sms
+		$type = PDU\Type::parse();
+		$self = NULL;
+		
+		switch($type->getMti()){
+			case PDU\Type::SMS_DELIVER:
+				$self = new Deliver();
+				break;
+		
+			case PDU\Type::SMS_SUBMIT:
+				$self = new Submit();
+				// get mr
+				$self->_mr = hexdec(PDU::getPduSubstr(2));
+				break;
+			
+			case PDU\Type::SMS_REPORT:
+				$self = new Report();
+				// get reference
+				$self->_reference = hexdec(PDU::getPduSubstr(2));
+				break;
+			
+			default:
+				throw new Exception("Unknown sms type");
+				
+		}
+		
+		// set type
+		$self->_type = $type;
+		
+		return $self;
+	}
+	
+	public static function initVars(PDU $pdu)
+	{
+		// if is the report status
+		if($pdu->_type instanceof PDU\Type\Report){
+			// parse timestamp
+			$pdu->_timestamp = PDU\SCTS::parse();
+			
+			// parse discharge
+			$pdu->_discharge = PDU\SCTS::parse();
+			
+			// get status
+			$pdu->_status = hexdec(PDU::getPduSubstr(2));
+		} else {
+			// get pid
+			$pdu->_pid = hexdec(PDU::getPduSubstr(2));
+
+			// parse dcs
+			$pdu->_dcs = PDU\DCS::parse();
+
+			// if this submit sms
+			if($pdu->_type instanceof PDU\Type\Submit){
+				// parse vp
+				$pdu->_vp = PDU\VP::parse($pdu);
+			} else {
+				// parse scts
+				$pdu->_scts = PDU\SCTS::parse();
+			}
+
+			// get data length
+			$pdu->_udl = hexdec(PDU::getPduSubstr(2));
+
+			// parse data
+			$pdu->_ud = PDU\Data::parse($pdu);
+		}
+		
+		return $pdu;
+	}
 }
