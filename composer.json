@@ -15,7 +15,8 @@
 	],
 	"autoload": {
 		"psr-4": {
-			"jackkum\\PHPPDU\\": "vendor/jackkum/PHPPDU/"
+			"jackkum\\" : "vendor/jackkum",
+			"jackkum\\PHPPDU\\": "vendor/jackkum/phppdu"
 		}
 	}
 }
