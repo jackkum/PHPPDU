@@ -6,12 +6,9 @@ Creating a PDU string for sending sms
 ----------------------
 
 ```php
-require_once './jackkum/PHPPDU/Autoloader.php';
+require_once './vendor/autoload.php';
 
 use jackkum\PHPPDU\Submit;
-use jackkum\PHPPDU\Autoloader;
-
-Autoloader::register();
 
 $pdu = new Submit();
 
@@ -26,10 +23,9 @@ foreach($pdu->getParts() as $part){
 ----------------------
 
 ```php
-require_once './jackkum/PHPPDU/Autoloader.php';
+require_once './vendor/autoload.php';
 
 use jackkum\PHPPDU\PDU;
-use jackkum\PHPPDU\Autoloader;
 
 $pdu = PDU::parse($str);
 
@@ -46,6 +42,10 @@ foreach($pdu->getParts() as $part){
 ----------------------
 
 ```php
+require_once './vendor/autoload.php';
+
+use jackkum\PHPPDU\PDU;
+
 $main = NULL;
 
 foreach(self::$lines as $line){
