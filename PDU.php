@@ -76,7 +76,7 @@ abstract class PDU {
 	public function __construct()
 	{
 		$this->setSca();
-		$this->setType();
+		$this->initType();
 		$this->setDcs();
 	}
 	
@@ -126,6 +126,15 @@ abstract class PDU {
 	{
 		return $this->_udl;
 	}
+	
+	/**
+	 * setter for user data length
+	 * @param type $udl
+	 */
+	public function setUdl($udl)
+	{
+		$this->_udl = $udl;
+	}
 
 	/**
 	 * set sms center
@@ -159,7 +168,7 @@ abstract class PDU {
 	 * @param array $params
 	 * @return PDU
 	 */
-	abstract public function setType(array $params = array());
+	abstract public function initType(array $params = array());
 	
 	/**
 	 * get pdu type
@@ -168,6 +177,15 @@ abstract class PDU {
 	public function getType()
 	{
 		return $this->_type;
+	}
+	
+	/**
+	 * setter for the type of pdu
+	 * @param PDU\Type $type
+	 */
+	public function setType($type)
+	{
+		$this->_type = $type;
 	}
 	
 	/**
@@ -195,9 +213,9 @@ abstract class PDU {
 	 * set Data Coding Scheme
 	 * @return PDU
 	 */
-	public function setDcs()
+	public function setDcs($dcs = NULL)
 	{
-		$this->_dcs = new PDU\DCS();
+		$this->_dcs = $dcs ? $dcs : new PDU\DCS();
 		return $this;
 	}
 	
@@ -212,13 +230,18 @@ abstract class PDU {
 	
 	/**
 	 * set data
-	 * @param string $data
+	 * @param string|PDU\Data $data
 	 * @return PDU
 	 */
 	public function setData($data)
 	{
-		$this->_ud = new PDU\Data($this);
-		$this->_ud->setData($data);
+		if($data instanceof PDU\Data){
+			$this->_ud = $data;
+		} else {
+			$this->_ud = new PDU\Data($this);
+			$this->_ud->setData($data);
+		}
+		
 		return $this;
 	}
 	

@@ -19,6 +19,11 @@
 
 namespace jackkum\PHPPDU\PDU;
 
+use jackkum\PHPPDU\PDU;
+use jackkum\PHPPDU\Submit;
+use jackkum\PHPPDU\Report;
+use jackkum\PHPPDU\Deliver;
+
 class Helper {
 	
 	/**
@@ -230,24 +235,24 @@ class Helper {
 	public static function getPduByType()
 	{
 		// parse type of sms
-		$type = PDU\Type::parse();
+		$type = Type::parse();
 		$self = NULL;
 		
 		switch($type->getMti()){
-			case PDU\Type::SMS_DELIVER:
+			case Type::SMS_DELIVER:
 				$self = new Deliver();
 				break;
 		
-			case PDU\Type::SMS_SUBMIT:
+			case Type::SMS_SUBMIT:
 				$self = new Submit();
 				// get mr
-				$self->_mr = hexdec(PDU::getPduSubstr(2));
+				$self->setMr(hexdec(PDU::getPduSubstr(2)));
 				break;
 			
-			case PDU\Type::SMS_REPORT:
+			case Type::SMS_REPORT:
 				$self = new Report();
 				// get reference
-				$self->_reference = hexdec(PDU::getPduSubstr(2));
+				$self->setReference(hexdec(PDU::getPduSubstr(2)));
 				break;
 			
 			default:
@@ -256,7 +261,7 @@ class Helper {
 		}
 		
 		// set type
-		$self->_type = $type;
+		$self->setType($type);
 		
 		return $self;
 	}
@@ -264,36 +269,36 @@ class Helper {
 	public static function initVars(PDU $pdu)
 	{
 		// if is the report status
-		if($pdu->_type instanceof PDU\Type\Report){
+		if($pdu->getType() instanceof Type\Report){
 			// parse timestamp
-			$pdu->_timestamp = PDU\SCTS::parse();
+			$pdu->setDateTime(SCTS::parse());
 			
 			// parse discharge
-			$pdu->_discharge = PDU\SCTS::parse();
+			$pdu->setDischarge(SCTS::parse());
 			
 			// get status
-			$pdu->_status = hexdec(PDU::getPduSubstr(2));
+			$pdu->setStatus(hexdec(PDU::getPduSubstr(2)));
 		} else {
 			// get pid
-			$pdu->_pid = hexdec(PDU::getPduSubstr(2));
+			$pdu->setPid(hexdec(PDU::getPduSubstr(2)));
 
 			// parse dcs
-			$pdu->_dcs = PDU\DCS::parse();
+			$pdu->setDcs(DCS::parse());
 
 			// if this submit sms
-			if($pdu->_type instanceof PDU\Type\Submit){
+			if($pdu->getType() instanceof Type\Submit){
 				// parse vp
-				$pdu->_vp = PDU\VP::parse($pdu);
+				$pdu->setVp(VP::parse($pdu));
 			} else {
 				// parse scts
-				$pdu->_scts = PDU\SCTS::parse();
+				$pdu->setScts(SCTS::parse());
 			}
 
 			// get data length
-			$pdu->_udl = hexdec(PDU::getPduSubstr(2));
+			$pdu->setUdl(hexdec(PDU::getPduSubstr(2)));
 
 			// parse data
-			$pdu->_ud = PDU\Data::parse($pdu);
+			$pdu->setData(Data::parse($pdu));
 		}
 		
 		return $pdu;

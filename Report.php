@@ -75,7 +75,7 @@ class Report extends PDU {
 	 * set pdu type
 	 * @param array $params
 	 */
-	public function setType(array $params = array())
+	public function initType(array $params = array())
 	{
 		$this->_type = new PDU\Type\Report($params);
 	}
@@ -90,12 +90,30 @@ class Report extends PDU {
 	}
 	
 	/**
+	 * setter for reference
+	 * @param integer $reference
+	 */
+	public function setReference($reference)
+	{
+		$this->_reference = $reference;
+	}
+	
+	/**
 	 * 
 	 * @return PDU\SCTS
 	 */
 	public function getDateTime()
 	{
 		return $this->_timestamp;
+	}
+	
+	/**
+	 * setter timestamp
+	 * @param string|int $timestamp
+	 */
+	public function setDateTime($timestamp)
+	{
+		$this->_timestamp = $timestamp;
 	}
 	
 	/**
@@ -108,12 +126,30 @@ class Report extends PDU {
 	}
 	
 	/**
+	 * setter for discharge
+	 * @param string|int $discharge
+	 */
+	public function setDischarge($discharge)
+	{
+		$this->_discharge = $discharge;
+	}
+	
+	/**
 	 * status report
 	 * @return integer
 	 */
 	public function getStatus()
 	{
 		return $this->_status;
+	}
+	
+	/**
+	 * setter for status
+	 * @param integer $status
+	 */
+	public function setStatus($status)
+	{
+		$this->_status = $status;
 	}
 	
 }
