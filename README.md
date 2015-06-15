@@ -3,6 +3,9 @@
 Creating a PDU string for sending sms
 
 # Usage
+
+composer require jackkum/phppdu
+
 ----------------------
 
 ```php
@@ -35,8 +38,9 @@ foreach($pdu->getParts() as $part){
 	$header = $part->getHeader();
 	echo "unique: ", $header->getPointer(), PHP_EOL;
 	echo $header->getCurrent(), " of ", $header->getSegments(), PHP_EOL;
-	echo $tmp->getData()->getData(), PHP_EOL;
 }
+
+echo $tmp->getData()->getData(), PHP_EOL;
 
 ```
 ----------------------
@@ -58,4 +62,6 @@ foreach(self::$lines as $line){
 	}
 	
 }
+
+echo $main->getData()->getData(), PHP_EOL;
 ```
