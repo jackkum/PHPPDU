@@ -185,7 +185,7 @@ class Helper {
 		for($i = 0; $i < mb_strlen($text, 'UTF-8'); $i++){
 			$byte = self::order(mb_substr($text, $i, 1, 'UTF-8'));
 			$pdu .= sprintf("%04X", $byte);
-			$length++;
+			$length += 2;
 		}
 		
 		return array($length, $pdu);
