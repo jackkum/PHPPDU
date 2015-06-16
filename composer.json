@@ -12,11 +12,5 @@
 			"name": "Evgenii Kumanin",
 			"email": "jackkum@bk.ru"
 		}
-	],
-	"autoload": {
-		"psr-4": {
-			"jackkum\\" : "vendor/jackkum",
-			"jackkum\\PHPPDU\\": "vendor/jackkum/phppdu"
-		}
-	}
+	]
 }
