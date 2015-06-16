@@ -92,7 +92,7 @@ class Deliver extends PDU {
 		$PDU  = (string) $this->getSca();
 		$PDU .= (string) $this->getType();
 		$PDU .= (string) $this->getAddress();
-		$PDU .= sprintf("%02X", $this->getPid());
+		$PDU .= sprintf("%02X", $this->getPid()->getValue());
 		$PDU .= (string) $this->getDcs();
 		$PDU .= (string) $this->getScts();
 		

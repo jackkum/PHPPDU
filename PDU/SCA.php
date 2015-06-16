@@ -80,7 +80,7 @@ class SCA {
 				if(($size % 2) != 0){
 					$size++;
 				}
-			// else size ib octets
+			// else size in octets
 			} else {
 				$size--;
 				$size *= 2;
@@ -146,30 +146,30 @@ class SCA {
 	/**
 	 * set phone number
 	 * @param string $phone
+	 * @param boolean $SC 
 	 */
-	public function setPhone($phone)
+	public function setPhone($phone, $SC = FALSE)
 	{
-		$this->_phone   = $phone;
+		$this->_phone     = $phone;
+		$clear            = preg_replace('/([^a-c0-9\*\#]*)/', NULL, $phone);
+		$this->_isAddress = !$SC;
 		
 		if($this->getType()->getType() == SCA\Type::TYPE_ALPHANUMERICAL){
-			list($this->size, $this->_encoded) = PDU\Helper::encode7bit($phone);
+			list($this->_size, $this->_encoded) = PDU\Helper::encode7bit($clear);
 		} else {
+			
+			// get size
+			// service center addres counting by octets OA or DA as length numbers
+			$this->_size = $SC ? 1 + ((strlen($clear) + 1)/2) : strlen($clear);
+			
 			$this->_encoded = implode(
 				"",
 				array_map(                               // join filtered phone letters
 					array('self', '_map_filter_encode'), // encode filter
-					str_split(                           // split string
-						preg_replace(                    // replace wrong letters
-							'/([^a-c0-9\*\#]*)/', 
-							NULL, 
-							$phone
-						)
-					)
+					str_split($clear)
 				)
 			);
 			
-			// get size
-			$this->_size = strlen($this->_encoded);
 		}
 		
 	}
@@ -224,7 +224,8 @@ class SCA {
 
 			if($this->getType()->getType() != SCA\Type::TYPE_ALPHANUMERICAL){
 				// reverse octets
-				for($i = 0; $i < $this->getSize(); $i += 2){
+				$l = strlen($this->_encoded);
+				for($i = 0; $i < $l; $i += 2){
 					$b1 = substr($this->_encoded, $i, 1);
 					$b2 = substr($this->_encoded, $i+1, 1);
 

@@ -41,9 +41,9 @@ abstract class PDU {
 	
 	/**
 	 * Protoсol Identifier
-	 * @var integer
+	 * @var PDU\PID
 	 */
-	protected $_pid = 0x00;
+	protected $_pid;
 	
 	/**
 	 * Data Coding Scheme
@@ -77,6 +77,7 @@ abstract class PDU {
 	{
 		$this->setSca();
 		$this->initType();
+		$this->setPid();
 		$this->setDcs();
 	}
 	
@@ -138,17 +139,23 @@ abstract class PDU {
 
 	/**
 	 * set sms center
-	 * @param string|null $number
+	 * @param string|null|PDU\SCA $address
 	 * @return PDU
 	 */
-	public function setSca($number = NULL)
+	public function setSca($address = NULL)
 	{
+		
+		if($address instanceof PDU\SCA){
+			$this->_sca = $address;
+			return;
+		}
+		
 		if( ! $this->_sca){
 			$this->_sca = new PDU\SCA(FALSE);
 		}
 		
-		if($number){
-			$this->_sca->setPhone($number);
+		if($address){
+			$this->_sca->setPhone($address, TRUE);
 		}
 		
 		return $this;
@@ -190,13 +197,18 @@ abstract class PDU {
 	
 	/**
 	 * set address
-	 * @param string $number
+	 * @param string|PDU\SCA $address
 	 * @return PDU
 	 */
-	public function setAddress($number)
+	public function setAddress($address)
 	{
+		if($address instanceof PDU\SCA){
+			$this->_address = $address;
+			return $this;
+		}
+		
 		$this->_address = new PDU\SCA();
-		$this->_address->setPhone($number);
+		$this->_address->setPhone($address);
 		return $this;
 	}
 	
@@ -211,9 +223,10 @@ abstract class PDU {
 	
 	/**
 	 * set Data Coding Scheme
+	 * @param PDU\DCS $dcs
 	 * @return PDU
 	 */
-	public function setDcs($dcs = NULL)
+	public function setDcs(PDU\DCS $dcs = NULL)
 	{
 		$this->_dcs = $dcs ? $dcs : new PDU\DCS();
 		return $this;
@@ -259,15 +272,15 @@ abstract class PDU {
 	 * @param integer $pid
 	 * @return PDU
 	 */
-	public function setPid($pid)
+	public function setPid(PDU\PID $pid = NULL)
 	{
-		$this->_pid = 0xFF&$pid;
+		$this->_pid = $pid ? $pid : new PDU\PID();
 		return $this;
 	}
 	
 	/**
 	 * get pid
-	 * @return integer
+	 * @return PDU/PID
 	 */
 	public function getPid()
 	{

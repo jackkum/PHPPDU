@@ -26,55 +26,19 @@ use jackkum\PHPPDU\Deliver;
 
 class Helper {
 	
-	/**
-	 * ord function
-	 * @link http://ru.php.net/ord
-	 * @param string $c
-	 * @param integer $index
-	 * @param integer $bytes
-	 * @return integer|boolean
-	 */
-	public static function ordUTF8($c, $index = 0, &$bytes = null)
-	{
-		$len = strlen($c);
-		$bytes = 0;
-		
-		if($index >= $len){
-			return false;
-		}
-		
-		$h = ord($c{$index});
-		
-		if($h <= 0x7F){
-			$bytes = 1;
-			return $h;
-		} else if ($h < 0xC2){
-			return false;
-		} else if ($h <= 0xDF && $index < $len - 1) {
-			$bytes = 2;
-			return ($h & 0x1F) <<  6 | (ord($c{$index + 1}) & 0x3F);
-		} else if ($h <= 0xEF && $index < $len - 2) {
-			$bytes = 3;
-			return ($h & 0x0F) << 12 | (ord($c{$index + 1}) & 0x3F) << 6 | (ord($c{$index + 2}) & 0x3F);
-		} else if ($h <= 0xF4 && $index < $len - 3) {
-			$bytes = 4;
-			return ($h & 0x0F) << 18 | (ord($c{$index + 1}) & 0x3F) << 12
-                             | (ord($c{$index + 2}) & 0x3F) << 6
-                             | (ord($c{$index + 3}) & 0x3F);
-		} else {
-			return false;
-		}
-	}
 	
-	/**
-	 * chr function 
-	 * @link http://php.net/manual/ru/function.chr.php#88611
-	 * @param integer $u
-	 * @return string
-	 */
-	public static function chrUTF8($u)
+	public static function order($char, $encoding = "UTF-8")
 	{
-		return mb_convert_encoding('&#' . intval($u) . ';', 'UTF-8', 'HTML-ENTITIES');
+		$char = mb_convert_encoding($char, "UCS-4BE", $encoding);
+		$order = unpack("N", $char);
+		return ($order ? $order[1] : null);
+	}
+
+	public static function char($order, $encoding = "UTF-8")
+	{
+		$order = pack("N", $order);
+		$char = mb_convert_encoding($order, $encoding, "UCS-4BE");
+		return $char;
 	}
 	
 	/**
@@ -87,7 +51,7 @@ class Helper {
 		return implode(
 			"",
 			array_map(
-				array('self', 'chrUTF8'),
+				array('self', 'char'),
 				array_map(
 					'hexdec',
 					str_split(
@@ -109,7 +73,7 @@ class Helper {
 		return implode(
 			"",
 			array_map(
-				array('self', 'chrUTF8'),
+				array('self', 'char'),
 				array_map(
 					'hexdec',
 					str_split(
@@ -218,8 +182,8 @@ class Helper {
 		$length = 0;
 		$pdu    = NULL;
 		
-		for($i = 0; $i < mb_strlen($text); $i++){
-			$byte = ord(mb_substr($text, $i, 1));
+		for($i = 0; $i < mb_strlen($text, 'UTF-8'); $i++){
+			$byte = self::order(mb_substr($text, $i, 1, 'UTF-8'));
 			$pdu .= sprintf("%04X", $byte);
 			$length++;
 		}
@@ -280,7 +244,7 @@ class Helper {
 			$pdu->setStatus(hexdec(PDU::getPduSubstr(2)));
 		} else {
 			// get pid
-			$pdu->setPid(hexdec(PDU::getPduSubstr(2)));
+			$pdu->setPid(PDU\PID::parse());
 
 			// parse dcs
 			$pdu->setDcs(DCS::parse());

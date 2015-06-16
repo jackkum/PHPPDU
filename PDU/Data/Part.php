@@ -115,7 +115,7 @@ class Part {
 				throw new Exception("Unknown alpabet");
 		}
 		
-		$size = mb_strlen($text);
+		$size = mb_strlen($text, 'UTF-8');
 		$self = new self(
 			$data, 
 			$hex, 
