@@ -20,6 +20,8 @@
 
 namespace jackkum\PHPPDU\PDU;
 
+use jackkum\PHPPDU\PDU;
+
 class PID {
 	
 	const PID_ASSIGNED   = 0x00; // Assigns bits 0..5 as defined below
@@ -54,6 +56,17 @@ class PID {
 	 * @var integer
 	 */
 	protected $_type = self::TYPE_IMPLICIT;
+	
+	public static function parse()
+	{
+		$byte = hexdec(PDU::getPduSubstr(2));
+		$self = new self();
+		$self->setPid($byte >> 6);
+		$self->setIndicates($byte >> 5);
+		$self->setType($byte);
+		
+		return $self;
+	}
 	
 	/**
 	 * getter for the pid

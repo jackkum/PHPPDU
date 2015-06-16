@@ -244,7 +244,7 @@ class Helper {
 			$pdu->setStatus(hexdec(PDU::getPduSubstr(2)));
 		} else {
 			// get pid
-			$pdu->setPid(hexdec(PDU::getPduSubstr(2)));
+			$pdu->setPid(PDU\PID::parse());
 
 			// parse dcs
 			$pdu->setDcs(DCS::parse());
