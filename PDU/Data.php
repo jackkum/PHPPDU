@@ -62,7 +62,7 @@ class Data {
 	public function __construct(PDU $pdu)
 	{
 		// set encoding
-		mb_internal_encoding('utf-8');
+		mb_internal_encoding('UTF-8');
 		// set message
 		$this->_pdu = $pdu;
 	}
@@ -173,9 +173,9 @@ class Data {
 		$this->_size = 0;
 		
 		// check message
-		for($i = 0; $i < mb_strlen($this->_data); $i++){
+		for($i = 0; $i < mb_strlen($this->_data, 'UTF-8'); $i++){
 			// get byte
-			$byte = Helper::ordUTF8(mb_substr($this->_data, $i, 1));
+			$byte = Helper::order(mb_substr($this->_data, $i, 1, 'UTF-8'));
 			
 			if($byte > 0xC0){
 				$this->_isUnicode = TRUE;
@@ -199,7 +199,7 @@ class Data {
 			// can't compress message
 			$this->getPdu()
 				 ->getDcs()
-				 ->setTextCompressed(FALSE)					// no compress
+				 ->setTextCompressed(FALSE)				// no compress
 				 ->setTextAlphabet(DCS::ALPHABET_UCS2);	// type alphabet is UCS2
 		}
 		
@@ -285,7 +285,8 @@ class Data {
 		
 		while(TRUE)
 		{
-			$part    = mb_substr($this->_data, $offset, $size);
+			$part    = mb_substr($this->_data, $offset, $size, 'UTF-8');
+			PDU::debug("Part[" . $size . "]: " . $part);
 			$data[]  = $part;
 			$offset += $size;
 			
