@@ -55,6 +55,38 @@ class PduTest extends PHPUnit_Framework_TestCase
 		$this->assertTrue($pdu->getAddress()->getPhone() == '79025449307');
 
 	}
+	
+	public function testSCA()
+	{
+		$pdu = new Submit();
+		$pdu->setSca("+31653131313");
+		$pdu->setAddress("+48660548430");
+		$pdu->setData("łóśćąę");
+		
+		$parts = $pdu->getParts();
+		$this->assertNotNull($parts);
+		$this->assertCount(1, $parts);
+
+		foreach($parts as $part){
+			$this->assertTrue(((string)$part) == '07911356131313F321000B918466508434F000080C014200F3015B010701050119');
+		}
+	}
+	
+	public function testPolishChar()
+	{
+		$pdu = new Submit();
+		$pdu->setAddress("+48660548430");
+		$pdu->setVp(3600 * 24 * 4);
+		$pdu->setData("łóśćąę"); // łóśćąę 
+		
+		$parts = $pdu->getParts();
+		$this->assertNotNull($parts);
+		$this->assertCount(1, $parts);
+
+		foreach($parts as $part){
+			$this->assertTrue(((string)$part) == '0031000B918466508434F00008AA0C014200F3015B010701050119');
+		}
+	}
 
 	public function testSubmitParse()
 	{
