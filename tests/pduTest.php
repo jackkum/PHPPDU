@@ -28,11 +28,7 @@ use jackkum\PHPPDU\Deliver;
 
 class PduTest extends PHPUnit_Framework_TestCase
 {
-	protected static $lines = array(
-		'0061000B919720459403F700008C06080458F30301ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FB0D',
-		'0061000B919720459403F700008C06080458F30302EE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C',
-		'0061000B919720459403F700006306080458F3030320F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCFA076793E0F9FCB2E970B'
-	);
+	protected static $lines = array();
 
 	protected static $message = "long \nlong long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long message...";
 
@@ -50,6 +46,7 @@ class PduTest extends PHPUnit_Framework_TestCase
 
 		foreach($parts as $part){
 			$this->assertTrue($part instanceof PDU\Data\Part);
+			self::$lines[] = (string) $part;
 		}
 
 		$this->assertTrue($pdu->getAddress()->getPhone() == '79025449307');
@@ -90,9 +87,9 @@ class PduTest extends PHPUnit_Framework_TestCase
 
 	public function testSubmitParse()
 	{
-		$main = PDU::parse(array_shift(self::$lines));
+		$main = NULL;
 		
-		foreach(self::$lines as $line){
+		foreach(self::$lines as $i => $line){
 			$pdu = PDU::parse($line);
 			
 			// check instance
@@ -107,15 +104,18 @@ class PduTest extends PHPUnit_Framework_TestCase
 			$part  = array_shift($parts);
 			// check current part of pdu
 			$this->assertNotNull($part);
-			// append part
-			$main->getData()->append($pdu);
+			
+			if(is_null($main)){
+				// get current pdu
+				$main = $pdu;
+			} else {
+				// append part
+				$main->getData()->append($pdu);
+			}
 		}
 		
 		// check text message
-		//echo "\n";
-		//echo $main->getData()->getData(), "\n";
-		//echo self::$message, "\n";
-		//$this->assertTrue($main->getData()->getData() == self::$message);
+		$this->assertTrue($main->getData()->getData() == self::$message);
 		
 	}
 	
