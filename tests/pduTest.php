@@ -28,11 +28,7 @@ use jackkum\PHPPDU\Deliver;
 
 class PduTest extends PHPUnit_Framework_TestCase
 {
-	protected static $lines = array(
-		'0061000B919720459403F700008C06080458F30301ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FB0D',
-		'0061000B919720459403F700008C06080458F30302EE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C',
-		'0061000B919720459403F700006306080458F3030320F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCF20F6DB7D06B1DFEE3388FD769F41ECB7FB0C62BFDD6710FBED3E83D86FF719C47EBBCFA076793E0F9FCB2E970B'
-	);
+	protected static $lines = array();
 
 	protected static $message = "long \nlong long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long message...";
 
@@ -50,17 +46,50 @@ class PduTest extends PHPUnit_Framework_TestCase
 
 		foreach($parts as $part){
 			$this->assertTrue($part instanceof PDU\Data\Part);
+			self::$lines[] = (string) $part;
 		}
 
 		$this->assertTrue($pdu->getAddress()->getPhone() == '79025449307');
 
 	}
+	
+	public function testSCA()
+	{
+		$pdu = new Submit();
+		$pdu->setSca("+31653131313");
+		$pdu->setAddress("+48660548430");
+		$pdu->setData("łóśćąę");
+		
+		$parts = $pdu->getParts();
+		$this->assertNotNull($parts);
+		$this->assertCount(1, $parts);
+
+		foreach($parts as $part){
+			$this->assertTrue(((string)$part) == '07911356131313F321000B918466508434F000080C014200F3015B010701050119');
+		}
+	}
+	
+	public function testPolishChar()
+	{
+		$pdu = new Submit();
+		$pdu->setAddress("+48660548430");
+		$pdu->setVp(3600 * 24 * 4);
+		$pdu->setData("łóśćąę"); // łóśćąę 
+		
+		$parts = $pdu->getParts();
+		$this->assertNotNull($parts);
+		$this->assertCount(1, $parts);
+
+		foreach($parts as $part){
+			$this->assertTrue(((string)$part) == '0031000B918466508434F00008AA0C014200F3015B010701050119');
+		}
+	}
 
 	public function testSubmitParse()
 	{
-		$main = PDU::parse(array_shift(self::$lines));
+		$main = NULL;
 		
-		foreach(self::$lines as $line){
+		foreach(self::$lines as $i => $line){
 			$pdu = PDU::parse($line);
 			
 			// check instance
@@ -75,15 +104,18 @@ class PduTest extends PHPUnit_Framework_TestCase
 			$part  = array_shift($parts);
 			// check current part of pdu
 			$this->assertNotNull($part);
-			// append part
-			$main->getData()->append($pdu);
+			
+			if(is_null($main)){
+				// get current pdu
+				$main = $pdu;
+			} else {
+				// append part
+				$main->getData()->append($pdu);
+			}
 		}
 		
 		// check text message
-		//echo "\n";
-		//echo $main->getData()->getData(), "\n";
-		//echo self::$message, "\n";
-		//$this->assertTrue($main->getData()->getData() == self::$message);
+		$this->assertTrue($main->getData()->getData() == self::$message);
 		
 	}
 	
