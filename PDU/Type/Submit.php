@@ -27,7 +27,7 @@ class Submit extends PDU\Type {
 	{
 		$this->_rp   = isset($params['rp'])   ? 1 & $params['rp']   : 0;
 		$this->_udhi = isset($params['udhi']) ? 1 & $params['udhi'] : 0;
-		$this->_srr  = isset($params['srr'])  ? 1 & $params['srr']  : 1;
+		$this->_srr  = isset($params['srr'])  ? 1 & $params['srr']  : 0;
 		$this->_vpf  = isset($params['vpf'])  ? 3 & $params['vpf']  : 0;
 		$this->_rd   = isset($params['rd'])   ? 1 & $params['rd']   : 0;
 		$this->_mti  = 0x01; // SMS-SUBMIT
