@@ -58,7 +58,7 @@ class DCS {
 	 * is compressed text
 	 * @var boolean
 	 */
-	protected $_compressedText = FALSE;
+	protected $_compressedText = TRUE;
 	
 	/**
 	 * Text alphabet

@@ -274,6 +274,7 @@ class Data {
 	{
 		
 		// size less or equal max
+		PDU::debug("Size: " . $this->getSize() . " <= " . $max);
 		if($this->getSize() <= $max){
 			return array($this->_data);
 		}
