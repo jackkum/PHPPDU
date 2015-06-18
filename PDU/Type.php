@@ -165,6 +165,24 @@ abstract class Type {
 	}
 	
 	/**
+	 * set status report request
+	 * @param integer $srr
+	 */
+	public function setSrr($srr)
+	{
+		$this->_srr = (0x01&$srr);
+	}
+	
+	/**
+	 * getter for status report request
+	 * @return integer
+	 */
+	public function getSrr()
+	{
+		return $this->_srr;
+	}
+	
+	/**
 	 * getter for mti
 	 * @return integer
 	 */
