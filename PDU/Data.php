@@ -233,8 +233,11 @@ class Data {
 			switch($this->getPdu()->getDcs()->getTextAlphabet()){
 				
 				case DCS::ALPHABET_DEFAULT:
+					
+					$paddingBits = $header ? ((self::HEADER_SIZE * 8 ) + 1 ) % 7 : 0;
+					//if($paddingBits) $paddingBits = 7 - $paddingBits;
 					PDU::debug("Helper::encode7bit()");
-					list($size,$part) = Helper::encode7bit($text);
+					list($size,$part) = Helper::encode7bit2($text, $paddingBits);
 					break;
 				
 				case DCS::ALPHABET_8BIT:

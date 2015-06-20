@@ -145,13 +145,21 @@ class Helper {
 	 * @param string $text
 	 * @return array
 	 */
-	public static function encode7bit($text)
+	public static function encode7bit($text, $paddingBits = 0)
 	{
 		$ret   = '';
 		$data  = str_split($text);
 		$mask  = 0xFF;
 		$shift = 0;
 		$len   = count($data);
+		
+		var_dump($paddingBits);
+		
+		if($paddingBits){
+			$shift = 7 - $paddingBits;
+			$ret  .= chr($data[0] << (7 - $shift));
+			$shift++;
+		}
 		
 		for ($i = 0; $i < $len; $i++) {
 			
@@ -166,6 +174,40 @@ class Helper {
 			
 			$shift++;
 		}
+		
+		$str = unpack('H*', $ret);
+		
+		return array($len, strtoupper($str[1]));
+	}
+	
+	public static function encode7bit2($text, $paddingBits = 0)
+	{
+		$ret   = '';
+		$data  = array_map('ord', str_split($text));
+		$mask  = 0xFF;
+		$shift = 0;
+		$len   = count($data);
+		
+		var_dump($paddingBits);
+		
+		if($paddingBits){
+			$shift = 7 - $paddingBits;
+			$ret  .= chr($data[0] << (7 - $shift));
+			$shift++;
+		}
+		
+		for ($i = 0; $i < $len; $i++) {
+			
+			if ($shift == 7) { $shift = 0; continue; }
+			
+			$digit = ($data[$i] & 0x7f) >> $shift;
+			if($i < $len - 1) $digit |= $data[$i + 1] << (7 - $shift);
+			echo sprintf("%02X == %02X \n", $data[$i], $digit);
+			$ret   .= chr($digit);
+			$shift++;
+		}
+		
+		echo "\n";
 		
 		$str = unpack('H*', $ret);
 		
