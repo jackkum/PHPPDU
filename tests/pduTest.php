@@ -24,7 +24,7 @@ use jackkum\PHPPDU\Submit;
 use jackkum\PHPPDU\Report;
 use jackkum\PHPPDU\Deliver;
 
-//define('PDU_DEBUG', true);
+define('PDU_DEBUG', true);
 
 class PduTest extends PHPUnit_Framework_TestCase
 {
