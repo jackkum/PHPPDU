@@ -24,9 +24,38 @@ use jackkum\PHPPDU\Submit;
 use jackkum\PHPPDU\Report;
 use jackkum\PHPPDU\Deliver;
 
-class Helper {
+abstract class Helper {
 	
+	protected static $_limitNormal   = 140;
+	protected static $_limitCompress = 160;
+	protected static $_limitUnicode  = 70;
+
+	/**
+	 * set limit
+	 * @param integer $limit
+	 * @param string $type
+	 */
+	public static function setlimit($limit, $type)
+	{
+		self::${'_limit' . ucfirst($type)} = $limit;
+	}
 	
+	/**
+	 * getter for limit
+	 * @param string $type
+	 * @return integer
+	 */
+	public static function getlimit($type)
+	{
+		return self::${'_limit' . ucfirst($type)};
+	}
+
+	/**
+	 * ord() for unicode
+	 * @param string $char
+	 * @param string $encoding
+	 * @return integer
+	 */
 	public static function order($char, $encoding = "UTF-8")
 	{
 		$char = mb_convert_encoding($char, "UCS-4BE", $encoding);
@@ -34,6 +63,12 @@ class Helper {
 		return ($order ? $order[1] : null);
 	}
 
+	/**
+	 * chr() for unicode
+	 * @param integer $order
+	 * @param string $encoding
+	 * @return string
+	 */
 	public static function char($order, $encoding = "UTF-8")
 	{
 		$order = pack("N", $order);

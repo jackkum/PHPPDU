@@ -23,7 +23,7 @@ use jackkum\PHPPDU\PDU;
 
 class Data {
 	
-	const HEADER_SIZE = 7;
+	const HEADER_SIZE = 7; //UDHL + UDH
 	
 	/**
 	 * data length
@@ -192,10 +192,10 @@ class Data {
 	 */
 	protected function _prepareParts()
 	{
-		$max = 140;
+		$max = Helper::getLimit('normal');
 		if($this->_isUnicode){
 			// max length sms to unicode
-			$max = 70;
+			$max = Helper::getLimit('unicode');
 			// can't compress message
 			$this->getPdu()
 				 ->getDcs()
@@ -205,7 +205,7 @@ class Data {
 		
 		// if message is compressed
 		if($this->getPdu()->getDcs()->getTextCompressed()){
-			$max = 160;
+			$max = Helper::getLimit('compress');
 		}
 		
 		$parts  = $this->_splitMessage($max);
