@@ -225,12 +225,11 @@ class SCA {
 			if($this->getType()->getType() != SCA\Type::TYPE_ALPHANUMERICAL){
 				// reverse octets
 				$l = strlen($this->_encoded);
-				PDU::debug("SCA::strlen(" . $this->_encoded . ") " . $l);
 				for($i = 0; $i < $l; $i += 2){
 					$b1 = substr($this->_encoded, $i, 1);
 					$b2 = substr($this->_encoded, $i+1, 1);
-					var_dump($b2);
-					if($b2 === FALSE){
+					
+					if(!$b2){
 						$b2 = 'F';
 					}
 					// add to pdu
