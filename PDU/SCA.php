@@ -227,11 +227,7 @@ class SCA {
 				$l = strlen($this->_encoded);
 				for($i = 0; $i < $l; $i += 2){
 					$b1 = substr($this->_encoded, $i, 1);
-					$b2 = substr($this->_encoded, $i+1, 1);
-					
-					if(!$b2){
-						$b2 = 'F';
-					}
+					$b2 = (($i + 1) >= $l) ? 'F' : substr($this->_encoded, $i+1, 1);
 					// add to pdu
 					$PDU .= $b2 . $b1;
 				}
