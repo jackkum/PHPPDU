@@ -65,6 +65,7 @@ class PduTest extends PHPUnit_Framework_TestCase
 		$this->assertCount(1, $parts);
 
 		foreach($parts as $part){
+			echo (string)$part . " == 07911356131313F301000B918466508434F000080C014200F3015B010701050119\n";
 			$this->assertTrue(((string)$part) == '07911356131313F301000B918466508434F000080C014200F3015B010701050119');
 		}
 	}
@@ -81,6 +82,7 @@ class PduTest extends PHPUnit_Framework_TestCase
 		$this->assertCount(1, $parts);
 
 		foreach($parts as $part){
+			echo (string)$part . " == 07911356131313F301000B918466508434F000080C014200F3015B010701050119\n";
 			$this->assertTrue(((string)$part) == '0011000B918466508434F00008AA0C014200F3015B010701050119');
 		}
 	}
@@ -91,7 +93,7 @@ class PduTest extends PHPUnit_Framework_TestCase
 		
 		foreach(self::$lines as $i => $line){
 			$pdu = PDU::parse($line);
-			
+			var_dump(get_class($pdu));
 			// check instance
 			$this->assertTrue($pdu instanceof Submit);
 			// check phone mumber
