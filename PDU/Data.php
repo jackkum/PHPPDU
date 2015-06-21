@@ -23,7 +23,7 @@ use jackkum\PHPPDU\PDU;
 
 class Data {
 	
-	const HEADER_SIZE = 8; //UDHL + UDH
+	const HEADER_SIZE = 7; //UDHL + UDH
 	
 	/**
 	 * data length
