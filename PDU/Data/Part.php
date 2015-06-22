@@ -184,7 +184,7 @@ class Part {
 	 */
 	protected function _getPduString()
 	{
-		return (string) $this->_parent->getPdu();
+		return (string) $this->_parent->getPdu()->getStart();
 	}
 	
 	/**

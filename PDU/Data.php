@@ -192,7 +192,10 @@ class Data {
 	 */
 	protected function _prepareParts()
 	{
-		$max = Helper::getLimit('normal');
+		// 
+		$headerSize = self::HEADER_SIZE;
+		$max        = Helper::getLimit('normal');
+		
 		if($this->_isUnicode){
 			// max length sms to unicode
 			$max = Helper::getLimit('unicode');
@@ -206,9 +209,10 @@ class Data {
 		// if message is compressed
 		if($this->getPdu()->getDcs()->getTextCompressed()){
 			$max = Helper::getLimit('compress');
+			$headerSize++;
 		}
 		
-		$parts  = $this->_splitMessage($max);
+		$parts  = $this->_splitMessage($max, $headerSize);
 		$header = (count($parts) > 1);
 		$uniqid = rand(0, 65535);
 		
@@ -252,7 +256,7 @@ class Data {
 			}
 
 			if($header){
-				$size += self::HEADER_SIZE;
+				$size += $headerSize;
 			}
 			
 			$this->_parts[] = new Data\Part(
@@ -270,7 +274,7 @@ class Data {
 	 * @param integer $max
 	 * @return array
 	 */
-	protected function _splitMessage($max)
+	protected function _splitMessage($max, $header = self::HEADER_SIZE)
 	{
 		
 		// size less or equal max
@@ -282,7 +286,7 @@ class Data {
 		// parts of message
 		$data   = array();
 		$offset = 0;
-		$size   = $max - self::HEADER_SIZE;
+		$size   = $max - $header;
 		
 		while(TRUE)
 		{
