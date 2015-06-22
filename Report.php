@@ -152,4 +152,8 @@ class Report extends PDU {
 		$this->_status = $status;
 	}
 	
+	public function getStart()
+	{
+		return NULL;
+	}
 }

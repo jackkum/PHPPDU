@@ -108,6 +108,16 @@ class Submit extends PDU {
 	 */
 	public function __toString()
 	{
+		$lines = array();
+		foreach($this->getParts() as $part){
+			$lines[] = (string) $part;
+		}
+		
+		return implode(PHP_EOL, $lines);
+	}
+	
+	public function getStart()
+	{
 		$PDU  = (string) $this->getSca();
 		$PDU .= (string) $this->getType();
 		$PDU .= sprintf("%02X", $this->getMr());

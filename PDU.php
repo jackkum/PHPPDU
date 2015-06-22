@@ -178,6 +178,14 @@ abstract class PDU {
 	abstract public function initType(array $params = array());
 	
 	/**
+	 * abstract method for override on the child classes
+	 * return start pdu string for split message on parts
+	 * @return string
+	 */
+	abstract public function getStart();
+
+
+	/**
 	 * get pdu type
 	 * @return PDU\Type
 	 */
