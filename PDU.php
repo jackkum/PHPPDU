@@ -89,6 +89,7 @@ abstract class PDU {
 	public static function getPduSubstr($length)
 	{
 		$str = mb_substr(self::$_pduParse, 0, $length);
+		PDU::debug("PDU::getPduSubstr: " . $str);
 		self::$_pduParse = mb_substr(self::$_pduParse, $length);
 		return $str;
 	}
