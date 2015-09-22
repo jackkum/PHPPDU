@@ -76,14 +76,21 @@ class Header {
 	 */
 	public static function parse()
 	{
+		$udhl      = hexdec(PDU::getPduSubstr(2));
+		$type      = hexdec(PDU::getPduSubstr(2));
+		$psize     = hexdec(PDU::getPduSubstr(2));
+		$pointer   = hexdec(PDU::getPduSubstr( ($psize - 2) * 2 )); // psize is pointer + segments + current
+		$sergments = hexdec(PDU::getPduSubstr(2));
+		$current   = hexdec(PDU::getPduSubstr(2));
+		
 		$self = new self(
 			array(
-				'UDHL'     => hexdec(PDU::getPduSubstr(2)),
-				'TYPE'     => hexdec(PDU::getPduSubstr(2)),
-				'PSIZE'    => hexdec(PDU::getPduSubstr(2)),
-				'POINTER'  => hexdec(PDU::getPduSubstr(4)),
-				'SEGMENTS' => hexdec(PDU::getPduSubstr(2)),
-				'CURRENT'  => hexdec(PDU::getPduSubstr(2))
+				'UDHL'     => $udhl,
+				'TYPE'     => $type,
+				'PSIZE'    => $psize,
+				'POINTER'  => $pointer,
+				'SEGMENTS' => $sergments,
+				'CURRENT'  => $current
 			)
 		);
 		

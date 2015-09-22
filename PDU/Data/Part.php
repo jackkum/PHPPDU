@@ -90,10 +90,12 @@ class Part {
 		$length   = $data->getPdu()->getUdl() * ($alphabet == PDU\DCS::ALPHABET_UCS2 ? 4 : 2);
 		
 		if($data->getPdu()->getType()->getUdhi()){
+			PDU::debug("Header::parse()");
 			$header = Header::parse();
 		}
 		
 		$hex = PDU::getPduSubstr($length);
+		PDU::debug("Data (hex): " . $hex);
 		
 		switch($alphabet){
 			case PDU\DCS::ALPHABET_DEFAULT:
