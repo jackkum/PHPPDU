@@ -19,6 +19,7 @@
 
 require_once dirname(__FILE__).'/../vendor/autoload.php';
 
+use PHPUnit\Framework\TestCase;
 use jackkum\PHPPDU\PDU;
 use jackkum\PHPPDU\Submit;
 use jackkum\PHPPDU\Report;
@@ -26,7 +27,7 @@ use jackkum\PHPPDU\Deliver;
 
 define('PDU_DEBUG', true);
 
-class PduTest extends PHPUnit_Framework_TestCase
+class PduTest extends TestCase
 {
 	protected static $lines = array();
 
